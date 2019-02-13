@@ -26,8 +26,6 @@
   "types": "./index.d.ts",
   "dependencies": {
     "@atomist/automation-client": "1.3.0-master.20190209143849",
-    "@atomist/automation-client-ext-dashboard": "1.0.2-master.20190122114232",
-    "@atomist/automation-client-ext-logzio": "1.0.2-master.20190111233251",
     "@atomist/microgrammar": "1.1.0-master.20190205190919",
     "@atomist/sdm": "1.3.0-master.20190206205235",
     "@atomist/sdm-core": "1.3.0-master.20190211113656",

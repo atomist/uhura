@@ -15,8 +15,6 @@
  */
 
 import { Configuration } from "@atomist/automation-client";
-import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
-import { configureLogzio } from "@atomist/automation-client-ext-logzio";
 import {
     AutoCodeInspection,
     Autofix,
@@ -34,8 +32,6 @@ const machineOptions: ConfigureOptions = {
 
 export const configuration: Configuration = {
     postProcessors: [
-        configureLogzio,
-        configureDashboardNotifications,
         configureSdm(machine, machineOptions),
     ],
     sdm: {
