@@ -1,0 +1,15 @@
+subscription OnScmProvider {
+  SCMProvider(providerType: github_com) {
+    credential {
+      scopes
+      secret
+      owner {
+        person {
+          scmId {
+            login
+          }
+        }
+      }
+    }
+  }
+}
