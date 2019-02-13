@@ -110,7 +110,7 @@ interface Interpreted {
 
 export function machine(configuration: SoftwareDeliveryMachineConfiguration): SoftwareDeliveryMachine {
     const sdm = createSoftwareDeliveryMachine({
-        name: "Global SDM",
+        name: "Atomist CI SDM",
         configuration,
     });
 
