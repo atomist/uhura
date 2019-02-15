@@ -36,7 +36,7 @@
     "@atomist/sdm-pack-issue": "1.1.1-master.20190120184619",
     "@atomist/sdm-pack-k8s": "1.3.5-master.20190213201928",
     "@atomist/sdm-pack-node": "1.0.3-master.20190206103839",
-    "@atomist/sdm-pack-spring": "1.1.1-master.20190131212713",
+    "@atomist/sdm-pack-spring": "^1.1.1-master.20190215050634",
     "@atomist/slack-messages": "^1.1.0",
     "@kubernetes/client-node": "^0.7.2",
     "@types/git-url-parse": "^9.0.0",
