@@ -32,29 +32,4 @@ export const DefaultNodeSeeds: SelectedRepo[] = [
         url: "https://github.com/developit/express-es6-rest-api",
         description: "ES6 RESTful Express API",
     },
-    /*
-    // ^^^ Working
-    {
-        // TODO uses Travis but could be emulated
-        // Locally get the same build failure as Atomist does, running the Travis script
-        url: "https://github.com/gdi2290/angular-starter",
-        description: "Angular/TypeScript",
-    }, {
-        // TODO doesn't have a start script
-        url: "https://github.com/h5bp/html5-boilerplate",
-        description: "Template for fast, robust, and adaptable web apps or sites",
-    }, {
-        // TODO no Docker file
-        url: "https://github.com/react-boilerplate/react-boilerplate",
-        description: "Scalable React boilerplate",
-    }, {
-        // TODO issue running start
-        url: "https://github.com/kriasoft/nodejs-api-starter",
-        description: "GraphQL endpoint microservice",
-    }, {
-        // TODO hard to build, inconsistent license files
-        url: "https://github.com/clintonwoo/hackernews-react-graphql",
-        description: "React/GraphQL Hacker News clone",
-    },
-    */
 ];
