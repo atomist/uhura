@@ -214,7 +214,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             description: "create a new project, selecting a seed project",
             generatorName: "CreateNode",
             generatorsToShow: 5,
-            sources: [preferencesSeedSource, opts.globalSeeds],
+            sources: [preferencesSeedSource, optsToUse.globalSeeds],
         }));
 
         // Command registrations
