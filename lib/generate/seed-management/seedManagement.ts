@@ -215,8 +215,6 @@ async function getSeeds(ctx: SdmContext): Promise<Seeds> {
 
 /**
  * Return seeds based on preferences
- * @param {SdmContext} ci
- * @return {Promise<Rx.IPromise<any>>}
  */
 export const preferencesSeedFinder: SelectedRepoFinder = async ci =>
     getSeeds(ci).then(seeds => seeds.seeds);
