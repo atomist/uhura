@@ -1,18 +1,18 @@
-import { travisScanner } from "../element/travis/travisScanner";
-import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
 import {
     analyzerBuilder,
     PlaceholderTransformRecipeContributor,
     preferencesScanner,
-    SnipTransformRecipeContributor
+    SnipTransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
-import { SpringBootStackSupport } from "../element/spring-boot/springBootStackSupport";
-import { AnalyzerFactory } from "./machine";
+import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
 import { dockerScanner } from "../element/docker/dockerScanner";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
 import { k8sScanner } from "../element/k8s/k8sScanner";
-import { EmulateTravisBuildInterpreter } from "../element/travis/EmulateTravisBuildInterpreter";
 import { NodeStackSupport } from "../element/node/nodeStackSupport";
+import { SpringBootStackSupport } from "../element/spring-boot/springBootStackSupport";
+import { EmulateTravisBuildInterpreter } from "../element/travis/EmulateTravisBuildInterpreter";
+import { travisScanner } from "../element/travis/travisScanner";
+import { AnalyzerFactory } from "./machine";
 
 /**
  * Default analyzer factory

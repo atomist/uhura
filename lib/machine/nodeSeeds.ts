@@ -19,7 +19,7 @@ import { SelectedRepo } from "../common/SelectedRepoFinder";
 /**
  * Default hard-coded list of seeds.
  */
-export const DefaultSeeds: SelectedRepo[] = [
+export const DefaultNodeSeeds: SelectedRepo[] = [
     {
         url: "https://github.com/sahat/hackathon-starter",
         description: "Node boilerplate (Hackathon starter)",

@@ -51,11 +51,11 @@ import {
     fingerprintSupport,
     messageMaker,
 } from "@atomist/sdm-pack-fingerprints";
-import { issueSupport, singleIssuePerCategoryManaging, } from "@atomist/sdm-pack-issue";
+import { issueSupport, singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
 import { NodeModulesProjectListener } from "@atomist/sdm-pack-node";
 import { SelectedRepoSource } from "../common/SelectedRepoFinder";
-import { deleteRepo, selectRepoToDelete, } from "../convenience/deleteRepo";
+import { deleteRepo, selectRepoToDelete } from "../convenience/deleteRepo";
 import { publishGitHubTopicsForElements } from "../element/common/publishGitHubTopicsForElements";
 import { esLintReviewCategory } from "../element/node/eslintCodeInspection";
 import { NpmDependencyFingerprint } from "../element/node/nodeFingerprint";
@@ -71,7 +71,7 @@ import {
     dropDownSeedUrlParameterDefinition,
     FreeTextSeedUrlParameterDefinition,
 } from "../generate/universal/seedParameter";
-import { universalGenerator, UniversalGeneratorName, } from "../generate/universal/universalGenerator";
+import { universalGenerator, UniversalGeneratorName } from "../generate/universal/universalGenerator";
 import { universalNodeGenerator } from "../generate/universal/universalNodeGenerator";
 import {
     disableCommand,
@@ -82,8 +82,8 @@ import {
     enableOrgCommand,
 } from "../preference/commands";
 import { IsSdmEnabled } from "../preference/pushTests";
-import { DefaultSeeds } from "./seeds";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
+import { DefaultNodeSeeds } from "./nodeSeeds";
 
 /**
  * Type for creating analyzers
@@ -93,11 +93,16 @@ export type AnalyzerFactory = (sdm: SoftwareDeliveryMachine) => ProjectAnalyzer;
 export interface CiMachineOptions {
     name: string;
     analyzerFactory: AnalyzerFactory;
+    globalSeeds: SelectedRepoSource;
 }
 
 const defaultCiMachineOptions: CiMachineOptions = {
     name: "Atomist CI SDM",
     analyzerFactory: defaultAnalyzerFactory,
+    globalSeeds: {
+        description: "Global seeds",
+        seedFinder: async () => DefaultNodeSeeds,
+    },
 };
 
 /**
@@ -191,20 +196,16 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             name: "CreateNodeFromList",
             description: "create a project from a curated list of Node seed repos",
             intent: `discover node ${sdm.configuration.name.replace("@", "")}`,
-            seedParameter: dropDownSeedUrlParameterDefinition(...DefaultSeeds),
+            seedParameter: dropDownSeedUrlParameterDefinition(...DefaultNodeSeeds),
         }));
 
-        const globalSeeds: SelectedRepoSource = {
-            description: "Global seeds",
-            seedFinder: async () => DefaultSeeds,
-        };
         sdm.addCommand(selectSeed({
             name: "SelectSeed",
             intent: `select seed`,
             description: "create a new project, selecting a seed project",
             generatorName: "CreateNode",
             generatorsToShow: 5,
-            sources: [preferencesSeedSource, globalSeeds],
+            sources: [preferencesSeedSource, opts.globalSeeds],
         }));
 
         // Command registrations
