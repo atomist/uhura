@@ -24,7 +24,7 @@ import {
     ConfigureOptions,
     configureSdm,
 } from "@atomist/sdm-core";
-import { machine } from "./lib/machine/machine";
+import { machineMaker } from "./lib/machine/machine";
 
 const machineOptions: ConfigureOptions = {
     requiredConfigurationValues: [],
@@ -32,7 +32,7 @@ const machineOptions: ConfigureOptions = {
 
 export const configuration: Configuration = {
     postProcessors: [
-        configureSdm(machine, machineOptions),
+        configureSdm(machineMaker(), machineOptions),
     ],
     sdm: {
         goal: {
