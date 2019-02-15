@@ -51,11 +51,17 @@ import {
     fingerprintSupport,
     messageMaker,
 } from "@atomist/sdm-pack-fingerprints";
-import { issueSupport, singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
+import {
+    issueSupport,
+    singleIssuePerCategoryManaging,
+} from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
 import { NodeModulesProjectListener } from "@atomist/sdm-pack-node";
 import { SelectedRepoSource } from "../common/SelectedRepoFinder";
-import { deleteRepo, selectRepoToDelete } from "../convenience/deleteRepo";
+import {
+    deleteRepo,
+    selectRepoToDelete,
+} from "../convenience/deleteRepo";
 import { publishGitHubTopicsForElements } from "../element/common/publishGitHubTopicsForElements";
 import { esLintReviewCategory } from "../element/node/eslintCodeInspection";
 import { NpmDependencyFingerprint } from "../element/node/nodeFingerprint";
@@ -71,7 +77,10 @@ import {
     dropDownSeedUrlParameterDefinition,
     FreeTextSeedUrlParameterDefinition,
 } from "../generate/universal/seedParameter";
-import { universalGenerator, UniversalGeneratorName } from "../generate/universal/universalGenerator";
+import {
+    universalGenerator,
+    UniversalGeneratorName,
+} from "../generate/universal/universalGenerator";
 import { universalNodeGenerator } from "../generate/universal/universalNodeGenerator";
 import {
     disableCommand,
