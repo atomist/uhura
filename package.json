@@ -27,8 +27,8 @@
   "dependencies": {
     "@atomist/automation-client": "1.3.0-master.20190215144219",
     "@atomist/microgrammar": "1.1.0-master.20190205190919",
-    "@atomist/sdm": "1.3.0-master.20190215112213",
-    "@atomist/sdm-core": "1.3.0-master.20190214192447",
+    "@atomist/sdm": "1.3.0-master.20190218090039",
+    "@atomist/sdm-core": "1.3.0-master.20190218091626",
     "@atomist/sdm-pack-analysis": "0.1.0-master.20190213071419",
     "@atomist/sdm-pack-build": "1.0.4-master.20190110123121",
     "@atomist/sdm-pack-docker": "1.1.0-master.20190213113315",
