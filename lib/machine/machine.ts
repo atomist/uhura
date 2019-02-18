@@ -17,7 +17,7 @@
 import { editModes } from "@atomist/automation-client";
 import {
     attachFacts,
-    DoNotSetAnyGoals,
+    DoNotSetAnyGoalsAndLock,
     formatDate,
     ImmaterialGoals,
     not,
@@ -144,7 +144,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
         }
 
         sdm.withPushRules(
-            whenPushSatisfies(not(IsSdmEnabled)).setGoals(DoNotSetAnyGoals),
+            whenPushSatisfies(not(IsSdmEnabled)).setGoals(DoNotSetAnyGoalsAndLock),
 
             attachFacts<Interpreted>(async pu => {
                 const interpretation = await analyzer.interpret(pu.project, pu);
