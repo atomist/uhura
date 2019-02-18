@@ -108,13 +108,6 @@ export class K8sDeployInterpreter implements Interpreter {
                     }
                 }
 
-                deploymentSpec.spec.template.spec.containers.forEach(c => {
-                    c.securityContext = {
-                        runAsUser: 2000,
-                        allowPrivilegeEscalation: false,
-                    };
-                });
-
                 app.deploymentSpec = deploymentSpec;
 
                 const ingressSpec: DeepPartial<k8s.V1beta1Ingress> = {
