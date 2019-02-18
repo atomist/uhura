@@ -53,6 +53,10 @@ export function mongo(tag: string = "latest"): K8sServiceRegistration {
                 memory: "256Mi",
             },
         },
+        securityContext: {
+            runAsUser: "mongodb",
+            allowPrivilegeEscalation: false,
+        },
     } as any;
 
     const spec: K8sServiceSpec = {
