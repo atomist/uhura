@@ -54,7 +54,7 @@ export function mongo(tag: string = "latest"): K8sServiceRegistration {
             },
         },
         securityContext: {
-            runAsUser: "mongodb",
+            runAsUser: 999,
             allowPrivilegeEscalation: false,
         },
     } as any;
