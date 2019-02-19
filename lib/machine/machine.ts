@@ -20,6 +20,7 @@ import {
     attachFacts,
     DoNotSetAnyGoalsAndLock,
     formatDate,
+    Goals,
     ImmaterialGoals,
     not,
     onAnyPush,
@@ -154,10 +155,6 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             interpretation: Interpretation;
         }
 
-        const extendedGoals = async (pu: StatefulPushListenerInvocation<Interpreted>) => {
-            return optsToUse.extendedGoals.mapping(pu);
-        };
-
         sdm.withPushRules(
             whenPushSatisfies(not(IsSdmEnabled)).setGoals(DoNotSetAnyGoalsAndLock),
 
@@ -176,16 +173,20 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("checks")
                 .setGoalsWhen(pu => checkGoals(pu.facts.interpretation, analyzer)),
-            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(extendedGoals)
+
+            // Don't schedule any extended goals
+            whenPushSatisfies(not(opts.extendedGoals)).setGoals(DoNotSetAnyGoalsAndLock),
+
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("build")
                 .setGoalsWhen(pu => buildGoals(pu.facts.interpretation, analyzer)),
-            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(extendedGoals)
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("test")
                 .setGoalsWhen(pu => testGoals(pu.facts.interpretation, analyzer)),
-            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(extendedGoals)
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("container build")
                 .setGoalsWhen(pu => containerGoals(pu.facts.interpretation, analyzer)),
-            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(extendedGoals)
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("deploy")
                 .setGoalsWhen(pu => deployGoals(pu.facts.interpretation, analyzer)),
         );
