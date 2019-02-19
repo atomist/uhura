@@ -16,12 +16,14 @@
 
 import { editModes } from "@atomist/automation-client";
 import {
+    AnyPush,
     attachFacts,
     DoNotSetAnyGoalsAndLock,
     formatDate,
     ImmaterialGoals,
     not,
     onAnyPush,
+    PushTest,
     SoftwareDeliveryMachine,
     StatefulPushListenerInvocation,
     whenPushSatisfies,
@@ -103,6 +105,14 @@ export interface CiMachineOptions {
     name: string;
     analyzerFactory: AnalyzerFactory;
     globalSeeds: SelectedRepoSource;
+
+    /**
+     * Optional push test to limited the types of pushes that should
+     * receive our extended goals including build, test, docker build and deploy
+     * Defaults to AnyPush meaning running ci-sdm locally would build, test and deploy
+     * each push.
+     */
+    extendedGoals?: PushTest;
 }
 
 const defaultCiMachineOptions: CiMachineOptions = {
@@ -112,6 +122,7 @@ const defaultCiMachineOptions: CiMachineOptions = {
         description: "Global seeds",
         seedFinder: async () => DefaultNodeSeeds,
     },
+    extendedGoals: AnyPush,
 };
 
 /**
@@ -161,16 +172,16 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("checks")
                 .setGoalsWhen(pu => checkGoals(pu.facts.interpretation, analyzer)),
-            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(optsToUse.extendedGoals)
                 .itMeans("build")
                 .setGoalsWhen(pu => buildGoals(pu.facts.interpretation, analyzer)),
-            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(optsToUse.extendedGoals)
                 .itMeans("test")
                 .setGoalsWhen(pu => testGoals(pu.facts.interpretation, analyzer)),
-            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(optsToUse.extendedGoals)
                 .itMeans("container build")
                 .setGoalsWhen(pu => containerGoals(pu.facts.interpretation, analyzer)),
-            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+            whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(optsToUse.extendedGoals)
                 .itMeans("deploy")
                 .setGoalsWhen(pu => deployGoals(pu.facts.interpretation, analyzer)),
         );
