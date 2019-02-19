@@ -175,7 +175,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
                 .setGoalsWhen(pu => checkGoals(pu.facts.interpretation, analyzer)),
 
             // Don't schedule any extended goals
-            whenPushSatisfies(not(opts.extendedGoals)).setGoals(DoNotSetAnyGoalsAndLock),
+            whenPushSatisfies(not(optsToUse.extendedGoals)).setGoals(DoNotSetAnyGoalsAndLock),
 
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("build")
