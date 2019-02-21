@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { editModes } from "@atomist/automation-client";
 import {
     AnyPush,
     attachFacts,
     DoNotSetAnyGoalsAndLock,
-    formatDate,
-    Goals,
     ImmaterialGoals,
     not,
     onAnyPush,
@@ -49,12 +46,6 @@ import {
     testGoals,
 } from "@atomist/sdm-pack-analysis";
 import {
-    checkNpmCoordinatesImpactHandler,
-    fingerprintImpactHandler,
-    fingerprintSupport,
-    messageMaker,
-} from "@atomist/sdm-pack-fingerprints";
-import {
     issueSupport,
     singleIssuePerCategoryManaging,
 } from "@atomist/sdm-pack-issue";
@@ -67,7 +58,6 @@ import {
 } from "../convenience/deleteRepo";
 import { publishGitHubTopicsForElements } from "../element/common/publishGitHubTopicsForElements";
 import { esLintReviewCategory } from "../element/node/eslintCodeInspection";
-import { NpmDependencyFingerprint } from "../element/node/nodeFingerprint";
 import {
     addSeed,
     importSeed,
@@ -256,7 +246,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
                     source: esLintReviewCategory,
                 },
             }),
-            fingerprintSupport({
+            /*fingerprintSupport({
                 fingerprints: NpmDependencyFingerprint,
                 handlers: [
                     checkNpmCoordinatesImpactHandler(),
@@ -277,7 +267,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
                             messageMaker,
                         },
                     )],
-            }),
+            }),*/
         );
 
         return sdm;
