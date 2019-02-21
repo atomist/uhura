@@ -17,7 +17,6 @@
 import { Configuration } from "@atomist/automation-client";
 import {
     AutoCodeInspection,
-    Autofix,
     Fingerprint,
 } from "@atomist/sdm";
 import {
@@ -37,7 +36,6 @@ export const configuration: Configuration = {
     sdm: {
         goal: {
             optional: [
-                new Autofix(),
                 new Fingerprint(),
                 new AutoCodeInspection(),
             ],
