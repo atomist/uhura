@@ -40,9 +40,9 @@ export class DockerBuildInterpreter implements Interpreter {
             progressReporter: DockerProgressReporter,
             logInterpreter: LogSuppressor,
             options: {
-                builder: "kaniko",
-                builderArgs: ["--snapshotMode=time", "--single-snapshot"],
-                push: false,
+                // builder: "kaniko",
+                // builderArgs: ["--snapshotMode=time", "--single-snapshot"],
+                // push: false,
                 dockerfileFinder: async p => {
                     let dockerfile: string = "Dockerfile";
                     await projectUtils.doWithFiles(p, "**/Dockerfile", async f => {
