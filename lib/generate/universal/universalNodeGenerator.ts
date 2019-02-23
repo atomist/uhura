@@ -15,9 +15,11 @@
  */
 
 import { GitHubRepoRef } from "@atomist/automation-client";
+import { Options } from "@atomist/automation-client/lib/metadata/automationMetadata";
 import {
     CodeTransform,
     GeneratorRegistration,
+    slackErrorMessage,
 } from "@atomist/sdm";
 import {
     NodeProjectCreationParameters,
@@ -25,6 +27,7 @@ import {
     UpdatePackageJsonIdentification,
     UpdateReadmeTitle,
 } from "@atomist/sdm-pack-node";
+import { codeLine } from "@atomist/slack-messages";
 import * as gitUrlParse from "git-url-parse";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
@@ -50,6 +53,13 @@ export function universalNodeGenerator(
             seedUrl: config.seedParameter,
         },
         startingPoint: pi => {
+            // Verify that only allowed seed urls are provided
+            if (!!config.seedParameter.type && (config.seedParameter.type as Options).kind === "single" ) {
+                const options = (config.seedParameter.type as Options).options;
+                if (!options.some(o => o.value === pi.parameters.seedUrl)) {
+                    throw new Error(`Provided seed url ${codeLine(pi.parameters.seedUrl)} is not in the list if available seeds.`);
+                }
+            }
             const gitUrl = gitUrlParse(pi.parameters.seedUrl);
             return GitHubRepoRef.from({ owner: gitUrl.owner, repo: gitUrl.name });
         },
