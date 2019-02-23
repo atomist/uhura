@@ -42,7 +42,7 @@ export interface DeleteRepoParameters {
 export const selectRepoToDelete: CommandHandlerRegistration<DeleteRepoParameters> = {
     name: "SelectRepoToDelete",
     intent: ["delete repo", "kill -9"],
-    description: "delete a repo",
+    description: "Select a repository to delete",
     parameters: {
         repo: {
             declarationType: DeclarationType.Mapped,
@@ -75,6 +75,7 @@ export const selectRepoToDelete: CommandHandlerRegistration<DeleteRepoParameters
  */
 export const deleteRepo: CommandHandlerRegistration<DeleteRepoParameters> = {
     name: "DeleteRepo",
+    description: "Delete a repository",
     parameters: {
         owner: {},
         repo: {},

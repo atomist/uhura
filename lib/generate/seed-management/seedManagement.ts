@@ -97,7 +97,7 @@ export function listSeeds(projectAnalyzer: ProjectAnalyzer): CommandHandlerRegis
     return {
         name: "ListSeeds",
         intent: "list seeds",
-        description: "list seed projects registered in your organization",
+        description: "List seed projects registered in your organization",
         listener: async ci => {
             const seeds = await getSeeds(ci);
             const msg = slackInfoMessage(
@@ -126,7 +126,7 @@ export function addSeed(projectAnalyzer: ProjectAnalyzer,
                         config: SeedDrivenCommandConfig = {
                             name: "AddSeed",
                             intent: "add seed",
-                            description: "register a seed project for your organization, without forking it",
+                            description: "Register a seed project for your organization, without forking it",
                             seedParameter: FreeTextSeedUrlParameterDefinition,
                         }): CommandHandlerRegistration<SeedDrivenCommandParams & { description: string }> {
     return {
@@ -149,7 +149,7 @@ export function removeSeed(
     config: SeedDrivenCommandConfig = {
         name: "RemoveSeed",
         intent: "remove seed",
-        description: "remove a seed project registered in your organization",
+        description: "Remove a seed project registered in your organization",
         seedParameter: FreeTextSeedUrlParameterDefinition,
     }): CommandHandlerRegistration<SeedDrivenCommandParams> {
     return {

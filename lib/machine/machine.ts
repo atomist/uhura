@@ -194,7 +194,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
         // Universal generator, which requires dynamic parameters
         sdm.addGeneratorCommand(universalGenerator(analyzer, {
             name: UniversalGeneratorName,
-            intent: `create ${sdm.configuration.name.replace("@", "")}`,
+            intent: `Create ${sdm.configuration.name.replace("@", "")}`,
             description: "create a project from any seed repo, based on analysis",
             seedParameter: FreeTextSeedUrlParameterDefinition,
         }));
@@ -202,14 +202,14 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
         // Create node from a free text input
         sdm.addGeneratorCommand(universalNodeGenerator({
             name: "CreateNode",
-            intent: `create node ${sdm.configuration.name.replace("@", "")}`,
+            intent: `Create node ${sdm.configuration.name.replace("@", "")}`,
             description: "create a project from any Node seed repo",
             seedParameter: FreeTextSeedUrlParameterDefinition,
         }));
 
         sdm.addGeneratorCommand(universalNodeGenerator({
             name: "CreateNodeFromList",
-            description: "create a project from a curated list of Node seed repos",
+            description: "Create a project from a curated list of Node seed repos",
             intent: `discover node ${sdm.configuration.name.replace("@", "")}`,
             seedParameter: dropDownSeedUrlParameterDefinition(...DefaultNodeSeeds),
         }));
@@ -217,7 +217,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
         sdm.addCommand(selectSeed({
             name: "SelectSeed",
             intent: `select seed`,
-            description: "create a new project, selecting a seed project",
+            description: "Create a new project, selecting a seed project",
             generatorName: "CreateNode",
             generatorsToShow: 5,
             sources: [preferencesSeedSource, optsToUse.globalSeeds],

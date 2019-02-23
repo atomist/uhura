@@ -66,6 +66,7 @@ export function createToggleSdmEnablementCommand(sdm: SoftwareDeliveryMachine,
     return {
         intent: `${enable ? "enable" : "disable"} ${sdm.configuration.name.replace("@", "")}`,
         name: enable ? "EnableCommand" : "DisableCommand",
+        description: enable ? "Enable SDM on a repository" : "Disable SDM on a repository",
         autoSubmit: true,
         parameters: OwnerAndRepo,
         listener: async ci => toggleSdmEnablement({ ...ci.parameters }, enable, ci),
@@ -77,6 +78,7 @@ export function createToggleSdmEnablementOrgCommand(sdm: SoftwareDeliveryMachine
     return {
         intent: `${enable ? "enable org" : "disable org"} ${sdm.configuration.name.replace("@", "")}`,
         name: enable ? "EnableOrgCommand" : "DisableOrgCommand",
+        description: enable ? "Enable SDM on an organization" : "Disable SDM on an organization",
         autoSubmit: true,
         parameters: { owner: OwnerAndRepo.owner },
         listener: async ci => toggleSdmEnablement({ ...ci.parameters }, enable, ci),
@@ -115,7 +117,20 @@ export function disableOrgCommand(sdm: SoftwareDeliveryMachine): CommandHandlerR
     return createToggleSdmEnablementOrgCommand(sdm, false);
 }
 
-export async function toggleGoalEnablement(goal: string, optIn: boolean, ctx: SdmContext): Promise<void> {
+export async function toggleGoalEnablement(sdm: SoftwareDeliveryMachine,
+                                           goal: string,
+                                           optIn: boolean,
+                                           ctx: SdmContext): Promise<void> {
+    const optionalGoals = _.get(sdm, "configuration.sdm.goal.optional", []);
+    if (!optionalGoals.some((g: Goal) => g.definition.displayName === goal)) {
+        await ctx.addressChannels(
+            slackWarningMessage(
+                optIn ? "Enable Goal" : "Disable Goal",
+                `Goal ${italic(goal)} does not exist or is not optional`,
+                ctx.context));
+        return;
+    }
+
     await ctx.preferences.put(`${goal}:enabled`, optIn, { scope: PreferenceScope.Sdm });
     if (optIn) {
         await ctx.addressChannels(
@@ -141,9 +156,10 @@ function createToggleGoalCommand(sdm: SoftwareDeliveryMachine,
     return {
         intent: `${enable ? "enable" : "disable"} goal ${sdm.configuration.name.replace("@", "")}`,
         name: enable ? "EnableGoalCommand" : "DisableGoalCommand",
+        description: enable ? "Enable SDM goal for a repository" : "Disable SDM goal for a repository",
         autoSubmit: true,
         parameters: { goal: { type: { options: optionalGoalParameter(sdm) } } },
-        listener: async ci => toggleGoalEnablement(ci.parameters.goal, enable, ci),
+        listener: async ci => toggleGoalEnablement(sdm, ci.parameters.goal, enable, ci),
     };
 }
 
