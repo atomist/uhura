@@ -47,6 +47,7 @@ import { errMsg } from "@atomist/sdm-pack-k8s/lib/support/error";
 import { codeLine } from "@atomist/slack-messages";
 import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
+import * as randomWord from "random-word";
 import { DeepPartial } from "ts-essentials";
 import { Mongo } from "../mongo/spec";
 import { K8sStack } from "./k8sScanner";
@@ -62,7 +63,7 @@ export class K8sDeployInterpreter implements Interpreter {
         .with({
             applicationData: async (app, p, kdp, goalEvent) => {
                 app.name = p.name;
-                app.host = `${p.id.repo.toLowerCase()}-${p.id.owner.toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
+                app.host = `${randomWord().toLowerCase()}-${randomWord.toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
                 app.path = "/";
                 app.ns = getNamespace(app.workspaceId);
                 app.imagePullSecret = "sdm-imagepullsecret";
