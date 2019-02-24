@@ -77,7 +77,11 @@ export function universalGenerator(projectAnalyzer: ProjectAnalyzer,
             const gitUrl = gitUrlParse(pi.parameters.seedUrl);
             const project = await GitCommandGitProject.cloned(
                 pi.credentials,
-                GitHubRepoRef.from({ owner: gitUrl.owner, repo: gitUrl.name }),
+                GitHubRepoRef.from({
+                    owner: gitUrl.owner,
+                    repo: gitUrl.name,
+                    path: gitUrl.filepath,
+                }),
                 { depth: 1 });
             const analysis = await projectAnalyzer.analyze(project, pi, { full: true });
             await enhanceWithSpecificParameters(analysis, pi as any);

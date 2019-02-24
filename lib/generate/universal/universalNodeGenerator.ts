@@ -61,7 +61,11 @@ export function universalNodeGenerator(
                 }
             }
             const gitUrl = gitUrlParse(pi.parameters.seedUrl);
-            return GitHubRepoRef.from({ owner: gitUrl.owner, repo: gitUrl.name });
+            return GitHubRepoRef.from({
+                owner: gitUrl.owner,
+                repo: gitUrl.name,
+                path: gitUrl.filepath,
+            });
         },
         transform: [
             UpdateReadmeTitle,
