@@ -51,7 +51,7 @@ import {
 } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
 import { NodeModulesProjectListener } from "@atomist/sdm-pack-node";
-import { SelectedRepoSource } from "../common/SelectedRepoFinder";
+import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
     selectRepoToDelete,
@@ -95,7 +95,7 @@ export type AnalyzerFactory = (sdm: SoftwareDeliveryMachine) => ProjectAnalyzer;
 export interface CiMachineOptions {
     name: string;
     analyzerFactory: AnalyzerFactory;
-    globalSeeds: SelectedRepoSource;
+    globalSeeds: SelectedRepo[];
 
     /**
      * Optional push test to limited the types of pushes that should
@@ -109,10 +109,7 @@ export interface CiMachineOptions {
 const defaultCiMachineOptions: CiMachineOptions = {
     name: "Atomist Uhura",
     analyzerFactory: defaultAnalyzerFactory,
-    globalSeeds: {
-        description: "Global seeds",
-        seedFinder: async () => DefaultNodeSeeds,
-    },
+    globalSeeds:  DefaultNodeSeeds,
     extendedGoals: AnyPush,
 };
 
@@ -211,7 +208,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             name: "CreateNodeFromList",
             description: "Create a project from a curated list of Node seed repos",
             intent: `discover node ${sdm.configuration.name.replace("@", "")}`,
-            seedParameter: dropDownSeedUrlParameterDefinition(...DefaultNodeSeeds),
+            seedParameter: dropDownSeedUrlParameterDefinition(...optsToUse.globalSeeds),
         }));
 
         sdm.addCommand(selectSeed({
@@ -220,7 +217,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             description: "Create a new project, selecting a seed project",
             generatorName: "CreateNode",
             generatorsToShow: 5,
-            sources: [preferencesSeedSource, optsToUse.globalSeeds],
+            sources: [preferencesSeedSource, { description: "Global Seeds", seedFinder: async () => optsToUse.globalSeeds }],
         }));
 
         // Command registrations
