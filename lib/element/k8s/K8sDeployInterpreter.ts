@@ -73,6 +73,7 @@ export class K8sDeployInterpreter implements Interpreter {
                         labels: {
                             "atomist.com/goalSetId": goalEvent.goalSetId,
                             "atomist.com/goalId": (goalEvent as any).id,
+                            "atomist.com/sdm-purpose": "application",
                         },
                     },
                     spec: {
