@@ -127,8 +127,6 @@ export class NodeBuildInterpreter implements Interpreter, AutofixRegisteringInte
         checkGoals.plan(this.fingerprintGoal);
         interpretation.checkGoals = checkGoals;
 
-        interpretation.autofixes.push(PackageJsonFormattingAutofix);
-
         if (!!nodeStack.javaScript && !!nodeStack.javaScript.eslint) {
             const eslint = nodeStack.javaScript.eslint;
             if (eslint.hasDependency && eslint.hasConfig) {
@@ -146,7 +144,7 @@ export class NodeBuildInterpreter implements Interpreter, AutofixRegisteringInte
     }
 
     get autofixes(): AutofixRegistration[] {
-        return [PackageJsonFormattingAutofix, EslintAutofix];
+        return [EslintAutofix];
     }
 
     get codeInspections(): Array<CodeInspectionRegistration<any>> {
