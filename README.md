@@ -1,10 +1,6 @@
-<p align="center">
-  <img src="https://images.atomist.com/sdm/SDM-Logo-Dark.png">
-</p>
+# @atomist/uhura
 
-# @atomist/ci-sdm
-
-Atomist CI SDM, which is capable of running CI workloads for common project types.
+Atomist Uhura, an SDM which is capable of running CI workloads for common project types.
 
 Also forms the basis of user SDMs.
 

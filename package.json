@@ -1,26 +1,27 @@
 {
-  "name": "@atomist/ci-sdm",
+  "name": "@atomist/uhura",
   "version": "0.1.0",
-  "description": "CI SDM",
+  "description": "Atomist Uhura, an SDM which is capable of running CI workloads for common project types.",
   "author": {
     "name": "Atomist",
     "email": "support@atomist.com",
     "url": "https://atomist.com/"
   },
   "license": "Apache-2.0",
-  "homepage": "https://github.com/atomist/ci-sdm#readme",
+  "homepage": "https://github.com/atomist/uhura#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/atomist/ci-sdm.git"
+    "url": "https://github.com/atomist/uhura.git"
   },
   "bugs": {
-    "url": "https://github.com/atomist/ci-sdm/issues"
+    "url": "https://github.com/atomist/uhura/issues"
   },
   "keywords": [
     "atomist",
     "automation",
     "ci",
-    "sdm"
+    "sdm",
+    "uhura"
   ],
   "main": "./index.js",
   "types": "./index.d.ts",

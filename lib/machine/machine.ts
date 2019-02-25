@@ -100,14 +100,14 @@ export interface CiMachineOptions {
     /**
      * Optional push test to limited the types of pushes that should
      * receive our extended goals including build, test, docker build and deploy
-     * Defaults to AnyPush meaning running ci-sdm locally would build, test and deploy
+     * Defaults to AnyPush meaning running Uhura locally would build, test and deploy
      * each push.
      */
     extendedGoals?: PushTest;
 }
 
 const defaultCiMachineOptions: CiMachineOptions = {
-    name: "Atomist CI SDM",
+    name: "Atomist Uhura",
     analyzerFactory: defaultAnalyzerFactory,
     globalSeeds: {
         description: "Global seeds",
