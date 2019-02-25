@@ -29,7 +29,7 @@
     "@atomist/automation-client": "1.3.0-master.20190221221959",
     "@atomist/microgrammar": "1.1.0-master.20190205190919",
     "@atomist/sdm": "1.3.0-master.20190225134646",
-    "@atomist/sdm-core": "1.3.0-master.20190225135734",
+    "@atomist/sdm-core": "1.3.0-master.20190225200411",
     "@atomist/sdm-pack-analysis": "0.1.0-master.20190213071419",
     "@atomist/sdm-pack-build": "1.0.4-master.20190110123121",
     "@atomist/sdm-pack-docker": "1.1.0-master.20190213113315",
