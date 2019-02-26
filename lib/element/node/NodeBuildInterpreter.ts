@@ -49,7 +49,6 @@ import { Mongo } from "../mongo/spec";
 import { RunEslint } from "./eslintCodeInspection";
 import {
     EslintAutofix,
-    PackageJsonFormattingAutofix,
 } from "./nodeAutofixs";
 import { NpmDependencyFingerprint } from "./nodeFingerprint";
 import { NodeStack } from "./nodeScanner";
