@@ -71,8 +71,8 @@ export class K8sDeployInterpreter implements Interpreter {
                 const deploymentSpec: DeepPartial<k8s.V1Deployment> = {
                     metadata: {
                         labels: {
-                            "atomist.com/goalSetId": goalEvent.goalSetId,
-                            "atomist.com/goalId": (goalEvent as any).id,
+                            "atomist.com/goal-set-id": goalEvent.goalSetId,
+                            "atomist.com/goal-id": (goalEvent as any).id,
                             "atomist.com/sdm-purpose": "application",
                         },
                     },
@@ -229,7 +229,7 @@ export class K8sDeployInterpreter implements Interpreter {
 
                 try {
                     const ns = getNamespace(context.workspaceId);
-                    const selector = `atomist.com/goalSetId=${goalEvent.goalSetId}`;
+                    const selector = `atomist.com/goal-set-id=${goalEvent.goalSetId}`;
                     const deployments = (await apps.listNamespacedDeployment(
                         ns,
                         undefined,
