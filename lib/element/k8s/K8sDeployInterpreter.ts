@@ -15,6 +15,7 @@
  */
 
 import {
+    Configuration,
     configurationValue,
     logger,
 } from "@atomist/automation-client";
@@ -140,7 +141,7 @@ export class K8sDeployInterpreter implements Interpreter {
             retries: 60,
             timeoutSeconds: 10,
             condition: async gi => {
-                const { goalEvent, context, id, progressLog } = gi;
+                const { goalEvent, context, id, progressLog, configuration } = gi;
                 let appData;
                 if (!getKubernetesGoalEventData(goalEvent)) {
                     const gs = await fetchGoalsForCommit(context, id, goalEvent.repo.providerId, goalEvent.goalSetId);
@@ -149,7 +150,8 @@ export class K8sDeployInterpreter implements Interpreter {
 
                     await updateGoal(gi.context, gi.goalEvent, {
                         state: SdmGoalState.in_process,
-                        description: `Verifying ${codeLine(`${getNamespace(gi.context.workspaceId)}/${gi.goalEvent.repo.name}`)}`,
+                        description:
+                            `Verifying ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                     });
 
                 } else {
@@ -171,7 +173,7 @@ export class K8sDeployInterpreter implements Interpreter {
     }).with({
         name: "verify-test-deploy",
         goalExecutor: async gi => {
-            const { goalEvent, context, id } = gi;
+            const { goalEvent, context, id, configuration } = gi;
             let appData;
             if (!getKubernetesGoalEventData(goalEvent)) {
                 const gs = await fetchGoalsForCommit(context, id, goalEvent.repo.providerId, goalEvent.goalSetId);
@@ -183,7 +185,7 @@ export class K8sDeployInterpreter implements Interpreter {
 
             return {
                 code: 0,
-                description: `Verified ${codeLine(`${getNamespace(gi.context.workspaceId)}/${gi.goalEvent.repo.name}`)}`,
+                description: `Verified ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                 externalUrls: await appExternalUrls(appData, goalEvent),
             };
         },
@@ -202,6 +204,7 @@ export class K8sDeployInterpreter implements Interpreter {
             retries: 20,
             timeoutSeconds: 60,
             condition: async gi => {
+                const { goalEvent, context, configuration } = gi;
                 const timeout = 10; // mins
                 const stopTs = gi.goalEvent.ts + (1000 * 60 * timeout);
                 if (stopTs <= Date.now()) {
@@ -210,7 +213,8 @@ export class K8sDeployInterpreter implements Interpreter {
 
                     await updateGoal(gi.context, gi.goalEvent, {
                         state: SdmGoalState.in_process,
-                        description: `Stopping ${codeLine(`${getNamespace(gi.context.workspaceId)}/${gi.goalEvent.repo.name}`)}`,
+                        description:
+                            `Stopping ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                         phase: `in ${formatDuration(stopTs - Date.now(), "m[m]")}`,
                     });
 
@@ -222,7 +226,7 @@ export class K8sDeployInterpreter implements Interpreter {
         .with({
             name: "stop-test-deploy",
             goalExecutor: async gi => {
-                const { progressLog, goalEvent, context } = gi;
+                const { progressLog, goalEvent, context, configuration } = gi;
                 progressLog.write(`Stopping test deployment`);
                 const kc = loadKubeConfig();
                 const apps = kc.makeApiClient(k8s.Apps_v1Api);
@@ -260,7 +264,8 @@ export class K8sDeployInterpreter implements Interpreter {
                 return {
                     code: 0,
                     state: SdmGoalState.success,
-                    description: `Stopped ${codeLine(`${getNamespace(gi.context.workspaceId)}/${gi.goalEvent.repo.name}`)}`,
+                    description:
+                        `Stopped ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                 };
             },
         })
@@ -278,6 +283,10 @@ export class K8sDeployInterpreter implements Interpreter {
 
         return true;
     }
+}
+
+function getCluster(configuration: Configuration): string {
+    return configuration.name.replace(/^@.*?\//, "").replace(/^.*?_/, "");
 }
 
 function getNamespace(workspaceId: string): string {
