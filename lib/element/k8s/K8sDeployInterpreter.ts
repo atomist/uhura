@@ -57,7 +57,7 @@ export class K8sDeployInterpreter implements Interpreter {
 
     private readonly testDeploy: Goal = new KubernetesDeploy(
         {
-            environment: "testing",
+            environment: "uhura",
             preApproval: true,
         })
         .withService(Mongo)
@@ -130,18 +130,18 @@ export class K8sDeployInterpreter implements Interpreter {
 
     private readonly verifyTestDeploy: Goal = goal({
         environment: "testing",
-        uniqueName: "verify testing deploy",
-        displayName: "verify `testing` deploy",
+        uniqueName: "verify uhura deploy",
+        displayName: "verify `uhura` deploy",
         descriptions: {
-            completed: "Verified `testing` deploy",
-            inProcess: "Verifying `testing` deploy",
+            completed: "Verified `uhura` deploy",
+            inProcess: "Verifying `uhura` deploy",
         },
         isolate: true,
         preCondition: {
             retries: 60,
             timeoutSeconds: 10,
             condition: async gi => {
-                const { goalEvent, context, id, progressLog, configuration } = gi;
+                const { goalEvent, context, id, progressLog } = gi;
                 let appData;
                 if (!getKubernetesGoalEventData(goalEvent)) {
                     const gs = await fetchGoalsForCommit(context, id, goalEvent.repo.providerId, goalEvent.goalSetId);
@@ -151,7 +151,7 @@ export class K8sDeployInterpreter implements Interpreter {
                     await updateGoal(gi.context, gi.goalEvent, {
                         state: SdmGoalState.in_process,
                         description:
-                            `Verifying ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
+                            `Verifying ${codeLine(`uhura:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                     });
 
                 } else {
@@ -173,7 +173,7 @@ export class K8sDeployInterpreter implements Interpreter {
     }).with({
         name: "verify-test-deploy",
         goalExecutor: async gi => {
-            const { goalEvent, context, id, configuration } = gi;
+            const { goalEvent, context, id } = gi;
             let appData;
             if (!getKubernetesGoalEventData(goalEvent)) {
                 const gs = await fetchGoalsForCommit(context, id, goalEvent.repo.providerId, goalEvent.goalSetId);
@@ -185,7 +185,7 @@ export class K8sDeployInterpreter implements Interpreter {
 
             return {
                 code: 0,
-                description: `Verified ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
+                description: `Verified ${codeLine(`uhura:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                 externalUrls: await appExternalUrls(appData, goalEvent),
             };
         },
@@ -193,18 +193,18 @@ export class K8sDeployInterpreter implements Interpreter {
 
     private readonly stopTestDeploy: Goal = goal({
         environment: "testing",
-        uniqueName: "stop testing deploy",
-        displayName: "stop `testing` deploy",
+        uniqueName: "stop uhura deploy",
+        displayName: "stop `uhura` deploy",
         descriptions: {
-            completed: "Stopped `testing` deploy",
-            inProcess: "Stopping `testing` deploy",
+            completed: "Stopped `uhura` deploy",
+            inProcess: "Stopping `uhura` deploy",
         },
         isolate: true,
         preCondition: {
             retries: 20,
             timeoutSeconds: 60,
             condition: async gi => {
-                const { goalEvent, context, configuration } = gi;
+                const { goalEvent, context } = gi;
                 const timeout = 10; // mins
                 const stopTs = gi.goalEvent.ts + (1000 * 60 * timeout);
                 if (stopTs <= Date.now()) {
@@ -214,7 +214,7 @@ export class K8sDeployInterpreter implements Interpreter {
                     await updateGoal(gi.context, gi.goalEvent, {
                         state: SdmGoalState.in_process,
                         description:
-                            `Stopping ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
+                            `Stopping ${codeLine(`uhura:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                         phase: `in ${formatDuration(stopTs - Date.now(), "m[m]")}`,
                     });
 
@@ -265,7 +265,7 @@ export class K8sDeployInterpreter implements Interpreter {
                     code: 0,
                     state: SdmGoalState.success,
                     description:
-                        `Stopped ${codeLine(`${getCluster(configuration)}:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
+                        `Stopped ${codeLine(`uhura:${getNamespace(context.workspaceId)}/${goalEvent.repo.name}`)}`,
                 };
             },
         })
@@ -283,10 +283,6 @@ export class K8sDeployInterpreter implements Interpreter {
 
         return true;
     }
-}
-
-function getCluster(configuration: Configuration): string {
-    return configuration.name.replace(/^@.*?\//, "").replace(/^.*?_/, "");
 }
 
 function getNamespace(workspaceId: string): string {
