@@ -43,7 +43,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
-|`@atomist/sdm-core`|`1.3.0-master.20190225235953`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
+|`@atomist/sdm-core`|`1.3.0-master.20190226092704`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
 |`@atomist/sdm-pack-analysis`|`0.1.0-master.20190213071419`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
 |`@atomist/sdm-pack-build`|`1.0.3`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
 |`@atomist/sdm-pack-build`|`1.0.4-master.20190110123121`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
@@ -53,7 +53,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |`@atomist/sdm-pack-k8s`|`1.3.5-master.20190213201928`|Atomist|[https://github.com/atomist/sdm-pack-k8s](https://github.com/atomist/sdm-pack-k8s)|
 |`@atomist/sdm-pack-node`|`1.0.3-master.20190226001831`|Atomist|[https://github.com/atomist/sdm-pack-node](https://github.com/atomist/sdm-pack-node)|
 |`@atomist/sdm-pack-spring`|`1.1.1-master.20190215050634`|Atomist|[https://github.com/atomist/sdm-pack-spring](https://github.com/atomist/sdm-pack-spring)|
-|`@atomist/sdm`|`1.3.0-master.20190225134646`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
+|`@atomist/sdm`|`1.3.0-master.20190226090409`|Atomist|[https://github.com/atomist/sdm](https://github.com/atomist/sdm)|
 |`@atomist/slack-messages`|`1.0.1-master.20180830190736`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@atomist/slack-messages`|`1.1.0`|Atomist|[https://github.com/atomist/slack-messages](https://github.com/atomist/slack-messages)|
 |`@kubernetes/client-node`|`0.8.1`|Kubernetes Authors|[https://github.com/kubernetes-client/javascript](https://github.com/kubernetes-client/javascript)|
