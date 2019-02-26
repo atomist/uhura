@@ -49,7 +49,7 @@ import { Mongo } from "../mongo/spec";
 import { RunEslint } from "./eslintCodeInspection";
 import {
     EslintAutofix,
-} from "./nodeAutofixs";
+} from "./nodeAutofixes";
 import { NpmDependencyFingerprint } from "./nodeFingerprint";
 import { NodeStack } from "./nodeScanner";
 

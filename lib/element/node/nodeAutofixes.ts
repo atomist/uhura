@@ -26,7 +26,7 @@ import { IsNode } from "@atomist/sdm-pack-node";
 import * as path from "path";
 import { PackageJson } from "./PackageJson";
 
-export const PackageJsonFormattingAutofix: AutofixRegistration = {
+export const PackageJsonFormatingAutofix: AutofixRegistration = {
     name: "Package JSON format",
     pushTest: IsNode,
     transform: async p => {
