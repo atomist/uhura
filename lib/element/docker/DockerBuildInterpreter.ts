@@ -35,7 +35,7 @@ import { DockerStack } from "./dockerScanner";
 
 export class DockerBuildInterpreter implements Interpreter {
 
-    private readonly dockerBuildGoal: DockerBuild = new DockerBuild()
+    private readonly dockerBuildGoal: DockerBuild = new DockerBuild({ isolate: true })
         .with({
             progressReporter: DockerProgressReporter,
             logInterpreter: LogSuppressor,
