@@ -63,7 +63,7 @@ export class K8sDeployInterpreter implements Interpreter {
         .with({
             applicationData: async (app, p, kdp, goalEvent) => {
                 app.name = p.name;
-                app.host = `${randomWord().toLowerCase()}-${randomWord.toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
+                app.host = `${randomWord().toLowerCase()}-${randomWord().toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
                 app.path = "/";
                 app.ns = getNamespace(app.workspaceId);
                 app.imagePullSecret = "sdm-imagepullsecret";
