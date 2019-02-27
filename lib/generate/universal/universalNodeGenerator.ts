@@ -19,7 +19,6 @@ import { Options } from "@atomist/automation-client/lib/metadata/automationMetad
 import {
     CodeTransform,
     GeneratorRegistration,
-    slackErrorMessage,
 } from "@atomist/sdm";
 import {
     NodeProjectCreationParameters,
@@ -29,6 +28,7 @@ import {
 } from "@atomist/sdm-pack-node";
 import { codeLine } from "@atomist/slack-messages";
 import * as gitUrlParse from "git-url-parse";
+import { SelectedRepo } from "../../common/SelectedRepoFinder";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
     SeedDrivenCommandConfig,
@@ -45,7 +45,8 @@ export interface UniversalNodeGeneratorParams extends NodeProjectCreationParamet
  * Node parameters, so does not require dynamic parameters.
  */
 export function universalNodeGenerator(
-    config: SeedDrivenCommandConfig): GeneratorRegistration<UniversalNodeGeneratorParams> {
+    config: SeedDrivenCommandConfig,
+    seeds: SelectedRepo[] = []): GeneratorRegistration<UniversalNodeGeneratorParams> {
     return {
         ...config,
         parameters: {
@@ -70,6 +71,14 @@ export function universalNodeGenerator(
         transform: [
             UpdateReadmeTitle,
             UpdatePackageJsonIdentification,
+            // Run the special transform that is registered on the seed
+            async (p, papi, params) => {
+                const seed = seeds.filter(s => !!s.transform).find(s => s.url === papi.parameters.seedUrl);
+                if (!!seed) {
+                    return seed.transform(p, papi, params);
+                }
+                return p;
+            },
             addProvenanceFile,
             SdmEnablementTransform,
         ],

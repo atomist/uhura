@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { SdmContext } from "@atomist/sdm";
+import {
+    CodeTransform,
+    SdmContext,
+} from "@atomist/sdm";
 
 export interface SelectedRepo {
 
     url: string;
-
     description: string;
+
+    transform?: CodeTransform;
 }
 
 /**

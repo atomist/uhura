@@ -212,7 +212,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             description: "Create a project from a curated list of Node seed repos",
             intent: `discover node ${sdm.configuration.name.replace("@", "")}`,
             seedParameter: dropDownSeedUrlParameterDefinition(...optsToUse.globalSeeds),
-        }));
+        }, optsToUse.globalSeeds));
 
         sdm.addCommand(selectSeed({
             name: "SelectSeed",
