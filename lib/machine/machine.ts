@@ -51,13 +51,13 @@ import {
 } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
 import { NodeModulesProjectListener } from "@atomist/sdm-pack-node";
+import { esLintReviewCategory } from "@atomist/sdm-pack-node/lib/stack/eslintCodeInspection";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
     selectRepoToDelete,
 } from "../convenience/deleteRepo";
 import { publishGitHubTopicsForElements } from "../element/common/publishGitHubTopicsForElements";
-import { esLintReviewCategory } from "../element/node/eslintCodeInspection";
 import {
     addSeed,
     importSeed,
