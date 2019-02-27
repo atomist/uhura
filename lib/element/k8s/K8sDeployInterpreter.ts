@@ -15,7 +15,6 @@
  */
 
 import {
-    Configuration,
     configurationValue,
     logger,
 } from "@atomist/automation-client";
