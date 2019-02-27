@@ -16,6 +16,7 @@
 
 import {
     configurationValue,
+    GitProject,
     logger,
 } from "@atomist/automation-client";
 import {
@@ -24,6 +25,7 @@ import {
     goal,
     Goal,
     goals,
+    SdmGoalEvent,
     SdmGoalState,
     ServiceRegistration,
     ServiceRegistrationGoalDataKey,
@@ -39,7 +41,10 @@ import {
     Interpretation,
     Interpreter,
 } from "@atomist/sdm-pack-analysis";
-import { KubernetesDeploy } from "@atomist/sdm-pack-k8s";
+import {
+    KubernetesApplication,
+    KubernetesDeploy,
+} from "@atomist/sdm-pack-k8s";
 import { getKubernetesGoalEventData } from "@atomist/sdm-pack-k8s/lib/deploy/data";
 import { appExternalUrls } from "@atomist/sdm-pack-k8s/lib/deploy/externalUrls";
 import { deleteApplication } from "@atomist/sdm-pack-k8s/lib/kubernetes/application";
@@ -61,74 +66,7 @@ export class K8sDeployInterpreter implements Interpreter {
         })
         .withService(Mongo)
         .with({
-            applicationData: async (app, p, kdp, goalEvent) => {
-                app.name = p.name;
-                app.host = `${randomWord().toLowerCase()}-${randomWord().toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
-                app.path = "/";
-                app.ns = getNamespace(app.workspaceId);
-                app.imagePullSecret = "sdm-imagepullsecret";
-
-                const deploymentSpec: DeepPartial<k8s.V1Deployment> = {
-                    metadata: {
-                        labels: {
-                            "atomist.com/goal-set-id": goalEvent.goalSetId,
-                            "atomist.com/goal-id": (goalEvent as any).id,
-                            "atomist.com/sdm-purpose": "application",
-                        },
-                    },
-                    spec: {
-                        template: {
-                            spec: {
-                                containers: [{}],
-                            },
-                        },
-                    },
-                };
-
-                if (!!goalEvent.data) {
-                    let data: any = {};
-                    try {
-                        data = JSON.parse(goalEvent.data);
-                    } catch (e) {
-                        logger.warn(`Failed to parse goal data on '${goalEvent.uniqueName}'`);
-                    }
-                    if (!!data[ServiceRegistrationGoalDataKey]) {
-                        _.forEach(data[ServiceRegistrationGoalDataKey], (v, k) => {
-                            logger.debug(
-                                `Service with name '${k}' and type '${v.type}' found for goal '${goalEvent.uniqueName}'`);
-                            if (v.type === K8sServiceRegistrationType.K8sService) {
-                                const spec = v.spec as K8sServiceSpec;
-                                if (!!spec.container) {
-                                    if (Array.isArray(spec.container)) {
-                                        deploymentSpec.spec.template.spec.containers.push(...spec.container);
-                                    } else {
-                                        deploymentSpec.spec.template.spec.containers.push(spec.container);
-                                    }
-                                }
-                            }
-                        });
-                    }
-                }
-
-                _.merge(app.deploymentSpec, deploymentSpec);
-
-                const ingressSpec: DeepPartial<k8s.V1beta1Ingress> = {
-                    metadata: {
-                        annotations: {
-                            "kubernetes.io/ingress.class": "nginx",
-                            "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
-                        },
-                    },
-                };
-
-                _.merge(app.ingressSpec, ingressSpec);
-
-                delete app.serviceAccountSpec;
-                delete app.roleBindingSpec;
-                delete app.roleSpec;
-
-                return app;
-            },
+            applicationData: applicationDataCallback,
         });
 
     private readonly verifyTestDeploy: Goal = goal({
@@ -286,6 +224,78 @@ export class K8sDeployInterpreter implements Interpreter {
 
         return true;
     }
+}
+
+export async function applicationDataCallback(app: KubernetesApplication,
+                                              p: GitProject,
+                                              g: KubernetesDeploy,
+                                              goalEvent: SdmGoalEvent): Promise<KubernetesApplication> {
+    app.name = p.name;
+    app.host = `${randomWord().toLowerCase()}-${randomWord().toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
+    app.path = "/";
+    app.ns = getNamespace(app.workspaceId);
+    app.imagePullSecret = "sdm-imagepullsecret";
+
+    const deploymentSpec: DeepPartial<k8s.V1Deployment> = {
+        metadata: {
+            labels: {
+                "atomist.com/goal-set-id": goalEvent.goalSetId,
+                "atomist.com/goal-id": (goalEvent as any).id,
+                "atomist.com/sdm-purpose": "application",
+            },
+        },
+        spec: {
+            template: {
+                spec: {
+                    containers: [{}],
+                },
+            },
+        },
+    };
+
+    if (!!goalEvent.data) {
+        let data: any = {};
+        try {
+            data = JSON.parse(goalEvent.data);
+        } catch (e) {
+            logger.warn(`Failed to parse goal data on '${goalEvent.uniqueName}'`);
+        }
+        if (!!data[ServiceRegistrationGoalDataKey]) {
+            _.forEach(data[ServiceRegistrationGoalDataKey], (v, k) => {
+                logger.debug(
+                    `Service with name '${k}' and type '${v.type}' found for goal '${goalEvent.uniqueName}'`);
+                if (v.type === K8sServiceRegistrationType.K8sService) {
+                    const spec = v.spec as K8sServiceSpec;
+                    if (!!spec.container) {
+                        if (Array.isArray(spec.container)) {
+                            deploymentSpec.spec.template.spec.containers.push(...spec.container);
+                        } else {
+                            deploymentSpec.spec.template.spec.containers.push(spec.container);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    app.deploymentSpec = _.merge(app.deploymentSpec || {}, deploymentSpec);
+
+    const ingressSpec: DeepPartial<k8s.V1beta1Ingress> = {
+        metadata: {
+            annotations: {
+                "kubernetes.io/ingress.class": "nginx",
+                "nginx.ingress.kubernetes.io/client-body-buffer-size": "1m",
+            },
+        },
+    };
+
+    app.ingressSpec = _.merge(app.ingressSpec || {}, ingressSpec);
+
+    delete app.serviceAccountSpec;
+    delete app.roleBindingSpec;
+    delete app.roleSpec;
+
+    return app;
 }
 
 function getNamespace(workspaceId: string): string {
