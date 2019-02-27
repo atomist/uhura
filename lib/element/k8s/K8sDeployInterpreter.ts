@@ -110,7 +110,7 @@ export class K8sDeployInterpreter implements Interpreter {
                     }
                 }
 
-                app.deploymentSpec = deploymentSpec;
+                _.merge(app.deploymentSpec, deploymentSpec);
 
                 const ingressSpec: DeepPartial<k8s.V1beta1Ingress> = {
                     metadata: {
@@ -121,7 +121,11 @@ export class K8sDeployInterpreter implements Interpreter {
                     },
                 };
 
-                app.ingressSpec = ingressSpec;
+                _.merge(app.ingressSpec, ingressSpec);
+
+                delete app.serviceAccountSpec;
+                delete app.roleBindingSpec;
+                delete app.roleSpec;
 
                 return app;
             },
