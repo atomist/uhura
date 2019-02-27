@@ -50,8 +50,11 @@ import {
     singleIssuePerCategoryManaging,
 } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
-import { NodeModulesProjectListener } from "@atomist/sdm-pack-node";
-import { esLintReviewCategory } from "@atomist/sdm-pack-node/lib/stack/eslintCodeInspection";
+import {
+    CacheScope,
+    npmInstallProjectListener,
+} from "@atomist/sdm-pack-node";
+import { esLintReviewCategory } from "@atomist/sdm-pack-node/lib/inspection/eslint";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
@@ -133,10 +136,10 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
 
         const analyzer = optsToUse.analyzerFactory(sdm);
 
-        analyzer.autofixGoal.withProjectListener(NodeModulesProjectListener);
+        analyzer.autofixGoal.withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
         analyzer.codeInspectionGoal
             .withListener(singleIssuePerCategoryManaging(esLintReviewCategory, true, () => true))
-            .withProjectListener(NodeModulesProjectListener);
+            .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
         interface Interpreted {
             interpretation: Interpretation;

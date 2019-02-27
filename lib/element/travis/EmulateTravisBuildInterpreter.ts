@@ -32,8 +32,8 @@ import {
 import {
     nodeBuilder,
     NodeModulesProjectListener,
+    NpmProgressTests,
 } from "@atomist/sdm-pack-node";
-import { NpmProgressTests } from "@atomist/sdm-pack-node/lib/build/npmProgressReporter";
 import * as _ from "lodash";
 import { BuildEnvironment } from "../common/buildOptions";
 import { mongo } from "../mongo/spec";
