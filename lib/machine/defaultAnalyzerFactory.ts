@@ -20,12 +20,13 @@ import {
     preferencesScanner,
     SnipTransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
+import { nodeStackSupport } from "@atomist/sdm-pack-node";
 import { springBootScanner } from "@atomist/sdm-pack-spring";
 import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
 import { dockerScanner } from "../element/docker/dockerScanner";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
 import { k8sScanner } from "../element/k8s/k8sScanner";
-import { NodeStackSupport } from "../element/node/nodeStackSupport";
+import { Mongo } from "../element/mongo/spec";
 import { EmulateTravisBuildInterpreter } from "../element/travis/EmulateTravisBuildInterpreter";
 import { travisScanner } from "../element/travis/travisScanner";
 import { AnalyzerFactory } from "./machine";
@@ -37,7 +38,9 @@ import { AnalyzerFactory } from "./machine";
  */
 export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
     analyzerBuilder(sdm)
-        .withStack(NodeStackSupport)
+        .withStack(nodeStackSupport({
+            configureTestGoal: g => g.withService(Mongo),
+        }))
         .withScanner(springBootScanner)
         .withScanner(dockerScanner)
         .withScanner(k8sScanner)

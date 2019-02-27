@@ -103,8 +103,8 @@ export function listSeeds(projectAnalyzer: ProjectAnalyzer): CommandHandlerRegis
             const msg = slackInfoMessage(
                 "Seeds",
                 `You have ${seeds.seeds.length} seed project${seeds.seeds.length !== 1 ? "s" : ""} registered in your organization`, {
-                actions: [actionableButton<SeedDrivenCommandParams & { description: string }>({ text: "Add Seed" }, addSeed(projectAnalyzer))],
-            });
+                    actions: [actionableButton<SeedDrivenCommandParams & { description: string }>({ text: "Add Seed" }, addSeed(projectAnalyzer))],
+                });
             for (const seed of seeds.seeds) {
                 msg.attachments.push({
                     text: seed.description,
@@ -243,7 +243,11 @@ async function validateSeed(projectAnalyzer: ProjectAnalyzer,
     const gitUrl = gitUrlParse(pi.parameters.seedUrl);
     const project = await GitCommandGitProject.cloned(
         pi.credentials,
-        GitHubRepoRef.from({ owner: gitUrl.owner, repo: gitUrl.name }),
+        GitHubRepoRef.from({
+            owner: gitUrl.owner,
+            repo: gitUrl.name,
+            path: gitUrl.filepath,
+        }),
         { depth: 1 });
     const analysis = await projectAnalyzer.analyze(project, pi, { full: true });
     if (!isUsableAsSeed(analysis) || !analysis.elements.node) {
