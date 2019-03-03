@@ -43,6 +43,7 @@ import {
     Interpretation,
     materialChange,
     ProjectAnalyzer,
+    releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
 import {
@@ -163,10 +164,6 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("checks")
                 .setGoalsWhen(pu => checkGoals(pu.facts.interpretation, analyzer)),
-
-            // Don't schedule any extended goals
-            whenPushSatisfies(not(optsToUse.extendedGoals)).setGoals(DoNotSetAnyGoalsAndLock),
-
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("build")
                 .setGoalsWhen(pu => buildGoals(pu.facts.interpretation, analyzer)),
@@ -176,6 +173,13 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("container build")
                 .setGoalsWhen(pu => containerGoals(pu.facts.interpretation, analyzer)),
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+                .itMeans("release")
+                .setGoalsWhen(pu => releaseGoals(pu.facts.interpretation, analyzer)),
+
+            // Don't schedule any further extended goals
+            whenPushSatisfies(not(optsToUse.extendedGoals)).setGoals(DoNotSetAnyGoalsAndLock),
+
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("deploy")
                 .setGoalsWhen(pu => deployGoals(pu.facts.interpretation, analyzer)),
