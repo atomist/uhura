@@ -92,13 +92,29 @@ import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 
 /**
- * Type for creating analyzers
+ * Type for creating analyzers. Provide an AnalyzerFactory to customize
+ * the capabilities of this SDM. See the ProjectAnalyzerBuilder helper.
  */
 export type AnalyzerFactory = (sdm: SoftwareDeliveryMachine) => ProjectAnalyzer;
 
-export interface CiMachineOptions {
-    name: string;
-    analyzerFactory: AnalyzerFactory;
+/**
+ * Options to an Uhura SDM
+ */
+export interface UhuraOptions {
+
+    readonly name: string;
+
+    /**
+     * Creates the ProjectAnalyzer for this SDM. This will determine
+     * how project analysis and interpretation behaves, driving project delivery.
+     * Support for additional stacks will be added primarily through
+     */
+    readonly analyzerFactory: AnalyzerFactory;
+
+    /**
+     * The global seed repos for this SDM. They will be available to all users,
+     * in additional to any seed repos associated with the current team.
+     */
     globalSeeds: SelectedRepo[];
 
     /**
@@ -110,7 +126,7 @@ export interface CiMachineOptions {
     extendedGoals?: PushTest;
 }
 
-const defaultCiMachineOptions: CiMachineOptions = {
+const defaultCiMachineOptions: UhuraOptions = {
     name: "Atomist Uhura",
     analyzerFactory: defaultAnalyzerFactory,
     globalSeeds:  DefaultNodeSeeds,
@@ -120,11 +136,11 @@ const defaultCiMachineOptions: CiMachineOptions = {
 /**
  * Return a function to create a new SoftwareDeliveryMachine based on the
  * given options.
- * @param {Partial<CiMachineOptions>} opts
+ * @param {Partial<UhuraOptions>} opts
  * @return {SoftwareDeliveryMachineMaker}
  */
-export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeliveryMachineMaker {
-    const optsToUse: CiMachineOptions = {
+export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDeliveryMachineMaker {
+    const optsToUse: UhuraOptions = {
         ...defaultCiMachineOptions,
         ...opts,
     };
@@ -146,18 +162,22 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             interpretation: Interpretation;
         }
 
+        // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
             whenPushSatisfies(not(IsSdmEnabled)).setGoals(DoNotSetAnyGoalsAndLock),
 
+            // Compute the Interpretation and attach it to the current push invocation
             attachFacts<Interpreted>(async pu => {
                 const interpretation = await analyzer.interpret(pu.project, pu);
                 return { interpretation };
             }),
 
+            // If the change isn't important, don't do anything
             whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(materialChange)
                 .itMeans("immaterial change")
                 .setGoals(ImmaterialGoals.andLock()),
 
+            // Set specific goals depending on the Interpretation
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("control")
                 .setGoalsWhen(pu => controlGoals(pu.facts.interpretation)),
@@ -227,7 +247,7 @@ export function machineMaker(opts: Partial<CiMachineOptions> = {}): SoftwareDeli
             sources: [preferencesSeedSource, { description: "Global Seeds", seedFinder: async () => optsToUse.globalSeeds }],
         }));
 
-        // Command registrations
+        // Uhura activation control registrations
         sdm.addCommand(enableCommand(sdm))
             .addCommand(disableCommand(sdm))
             .addCommand(enableOrgCommand(sdm))

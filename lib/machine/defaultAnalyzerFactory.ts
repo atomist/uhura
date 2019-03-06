@@ -32,7 +32,8 @@ import { travisScanner } from "../element/travis/travisScanner";
 import { AnalyzerFactory } from "./machine";
 
 /**
- * Default analyzer factory
+ * Default analyzer factory with support for Node, Docker and Kubernetes.
+ * Add more scanners, interpreters or stacks to extend your SDM's capabilities.
  * @param {SoftwareDeliveryMachine} sdm
  * @return {ProjectAnalyzer}
  */
@@ -49,6 +50,7 @@ export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
         .withInterpreter(new DockerBuildInterpreter())
         .withInterpreter(new EmulateTravisBuildInterpreter())
         .withInterpreter(new K8sDeployInterpreter())
+        // Add support for generic seeds...
         .withTransformRecipeContributor({
             contributor: new PlaceholderTransformRecipeContributor(),
             optional: false,

@@ -1,7 +1,7 @@
 {
   "name": "@atomist/uhura",
   "version": "0.1.0",
-  "description": "Atomist Uhura, an SDM which is capable of running CI workloads for common project types.",
+  "description": "Atomist Uhura, an SDM providing self service software delivery",
   "author": {
     "name": "Atomist",
     "email": "support@atomist.com",
