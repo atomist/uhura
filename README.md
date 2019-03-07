@@ -1,6 +1,6 @@
 # @atomist/uhura
 
-Atomist Uhura, an SDM which is capable of running CI workloads for common project types.
+Atomist Uhura, an SDM providing self service software delivery.
 
 Also forms the basis of user SDMs.
 
