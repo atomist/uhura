@@ -16,7 +16,6 @@
 
 import {
     GitCommandGitProject,
-    GitHubRepoRef,
     logger,
     Project,
 } from "@atomist/automation-client";
@@ -35,12 +34,12 @@ import {
     ProjectAnalyzer,
     TransformRecipeRequest,
 } from "@atomist/sdm-pack-analysis";
-import * as gitUrlParse from "git-url-parse";
 import * as _ from "lodash";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
+    toRepoRef,
     SeedDrivenCommandConfig,
-    SeedDrivenCommandParams,
+    SeedDrivenCommandParams, OptionalSeedParamsDefinitions,
 } from "./SeedDrivenCommandParams";
 import { FreeTextSeedUrlParameterDefinition } from "./seedParameter";
 
@@ -62,26 +61,22 @@ interface Analyzed {
  */
 export function universalGenerator(projectAnalyzer: ProjectAnalyzer,
                                    config: SeedDrivenCommandConfig = {
-        name: UniversalGeneratorName,
-        intent: "create",
-        seedParameter: FreeTextSeedUrlParameterDefinition,
-    }): GeneratorRegistration<SeedDrivenCommandParams> {
+                                       name: UniversalGeneratorName,
+                                       intent: "create",
+                                       seedParameter: FreeTextSeedUrlParameterDefinition,
+                                   }): GeneratorRegistration<SeedDrivenCommandParams> {
     return {
         ...config,
         parameters: {
+            ...OptionalSeedParamsDefinitions,
             seedUrl: config.seedParameter,
         },
         startingPoint: async pi => {
             // Clone and analyze the project to determine what additional parameters
             // to ask for
-            const gitUrl = gitUrlParse(pi.parameters.seedUrl);
             const project = await GitCommandGitProject.cloned(
                 pi.credentials,
-                GitHubRepoRef.from({
-                    owner: gitUrl.owner,
-                    repo: gitUrl.name,
-                    path: gitUrl.filepath,
-                }),
+                toRepoRef(pi.parameters),
                 { depth: 1 });
             const analysis = await projectAnalyzer.analyze(project, pi, { full: true });
             await enhanceWithSpecificParameters(analysis, pi as any);

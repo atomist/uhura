@@ -22,8 +22,22 @@ import {
 export interface SelectedRepo {
 
     url: string;
+
+    /**
+     * Branch or sha. Handling will be determined by the format
+     */
+    ref?: string;
+
+    /**
+     * Path within the repo. Undefined or "" means the root.
+     */
+    path?: string;
+
     description: string;
 
+    /**
+     * Transform that should be applied to this repo if it's used as a seed
+     */
     transform?: CodeTransform;
 }
 

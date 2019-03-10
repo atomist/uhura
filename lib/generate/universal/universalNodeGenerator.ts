@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { GitHubRepoRef } from "@atomist/automation-client";
 import { Options } from "@atomist/automation-client/lib/metadata/automationMetadata";
 import {
     CodeTransform,
@@ -27,13 +26,13 @@ import {
     UpdateReadmeTitle,
 } from "@atomist/sdm-pack-node";
 import { codeLine } from "@atomist/slack-messages";
-import * as gitUrlParse from "git-url-parse";
 import { SelectedRepo } from "../../common/SelectedRepoFinder";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
     SeedDrivenCommandConfig,
     SeedDrivenCommandParams,
 } from "./SeedDrivenCommandParams";
+import { toRepoRef } from "./SeedDrivenCommandParams";
 
 export interface UniversalNodeGeneratorParams extends NodeProjectCreationParameters,
     SeedDrivenCommandParams {
@@ -61,12 +60,7 @@ export function universalNodeGenerator(
                     throw new Error(`Provided seed url ${codeLine(pi.parameters.seedUrl)} is not in the list if available seeds.`);
                 }
             }
-            const gitUrl = gitUrlParse(pi.parameters.seedUrl);
-            return GitHubRepoRef.from({
-                owner: gitUrl.owner,
-                repo: gitUrl.name,
-                path: gitUrl.filepath,
-            });
+            return toRepoRef(pi.parameters);
         },
         transform: [
             UpdateReadmeTitle,

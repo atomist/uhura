@@ -49,6 +49,7 @@ import {
 } from "../../common/SelectedRepoFinder";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
+    OptionalSeedParamsDefinitions,
     SeedDrivenCommandConfig,
     SeedDrivenCommandParams,
 } from "../universal/SeedDrivenCommandParams";
@@ -75,6 +76,7 @@ export function importSeed(projectAnalyzer: ProjectAnalyzer,
         ...config,
         parameters: {
             ...NodeProjectCreationParametersDefinition,
+            ...OptionalSeedParamsDefinitions,
             seedUrl: config.seedParameter,
         },
         startingPoint: async pi => {

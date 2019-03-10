@@ -126,7 +126,7 @@ export interface UhuraOptions {
     extendedGoals?: PushTest;
 }
 
-const defaultCiMachineOptions: UhuraOptions = {
+const defaultUhuraOptions: UhuraOptions = {
     name: "Atomist Uhura",
     analyzerFactory: defaultAnalyzerFactory,
     globalSeeds:  DefaultNodeSeeds,
@@ -141,7 +141,7 @@ const defaultCiMachineOptions: UhuraOptions = {
  */
 export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDeliveryMachineMaker {
     const optsToUse: UhuraOptions = {
-        ...defaultCiMachineOptions,
+        ...defaultUhuraOptions,
         ...opts,
     };
 
