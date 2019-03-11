@@ -38,7 +38,7 @@ export interface ClusterAndNamespace {
 export interface DeploymentMapping {
     testing: ClusterAndNamespace;
     production: ClusterAndNamespace;
-};
+}
 
 export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ phase: string, cluster: string, ns: string }> {
     return {
