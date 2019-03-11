@@ -15,7 +15,7 @@
  */
 
 import { CodeTransform } from "@atomist/sdm";
-import { toggleSdmEnablement } from "../../preference/commands";
+import { toggleSdmEnablement } from "../../preference/enablement";
 
 /**
  * Invoke as a transform in a generator to enable SDM.

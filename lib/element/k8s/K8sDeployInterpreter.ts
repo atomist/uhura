@@ -17,7 +17,9 @@
 import {
     configurationValue,
     GitProject,
+    HandlerContext,
     logger,
+    QueryNoCacheOptions,
 } from "@atomist/automation-client";
 import {
     execPromise,
@@ -38,6 +40,7 @@ import {
 } from "@atomist/sdm-core/lib/pack/k8s/service";
 import { formatDuration } from "@atomist/sdm-core/lib/util/misc/time";
 import {
+    ElementsGoalsKey,
     Interpretation,
     Interpreter,
 } from "@atomist/sdm-pack-analysis";
@@ -47,6 +50,7 @@ import {
 } from "@atomist/sdm-pack-k8s";
 import { getKubernetesGoalEventData } from "@atomist/sdm-pack-k8s/lib/deploy/data";
 import { appExternalUrls } from "@atomist/sdm-pack-k8s/lib/deploy/externalUrls";
+import { ApplicationDataCallback } from "@atomist/sdm-pack-k8s/lib/deploy/goal";
 import { deleteApplication } from "@atomist/sdm-pack-k8s/lib/kubernetes/application";
 import { errMsg } from "@atomist/sdm-pack-k8s/lib/support/error";
 import { codeLine } from "@atomist/slack-messages";
@@ -54,6 +58,10 @@ import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
 import * as randomWord from "random-word";
 import { DeepPartial } from "ts-essentials";
+import {
+    DockerRegistryProvider,
+    Password,
+} from "../../typings/types";
 import { Mongo } from "../mongo/spec";
 import { K8sStack } from "./k8sScanner";
 
@@ -67,6 +75,25 @@ export class K8sDeployInterpreter implements Interpreter {
         .withService(Mongo)
         .with({
             applicationData: applicationDataCallback,
+        });
+
+    private readonly customTestDeploy: Goal = new KubernetesDeploy(
+        {
+            environment: "testing",
+        })
+        .with({
+            name: "testing",
+            applicationData: customApplicationDataCallback("testing"),
+        });
+
+    private readonly customProductionDeploy: Goal = new KubernetesDeploy(
+        {
+            environment: "production",
+            preApproval: true,
+        })
+        .with({
+            name: "production",
+            applicationData: customApplicationDataCallback("production"),
         });
 
     private readonly verifyTestDeploy: Goal = goal({
@@ -218,10 +245,20 @@ export class K8sDeployInterpreter implements Interpreter {
             return false;
         }
 
-        interpretation.deployGoals = goals("test deploy")
-            .plan(this.testDeploy)
-            .plan(this.verifyTestDeploy, this.stopTestDeploy).after(this.testDeploy);
+        if (!!k8sStack.deploymentMapping && !!k8sStack.deploymentMapping.testing) {
+            const deployGoals = goals("deploy");
+            deployGoals.plan(this.customTestDeploy);
 
+            if (!!k8sStack.deploymentMapping.production) {
+                deployGoals.plan(this.customProductionDeploy).after(this.customTestDeploy);
+            }
+
+            interpretation.deployGoals = deployGoals;
+        } else {
+            interpretation.deployGoals = goals("test deploy")
+                .plan(this.testDeploy)
+                .plan(this.verifyTestDeploy, this.stopTestDeploy).after(this.testDeploy);
+        }
         return true;
     }
 }
@@ -296,6 +333,79 @@ export async function applicationDataCallback(app: KubernetesApplication,
     delete app.roleSpec;
 
     return app;
+}
+
+export function customApplicationDataCallback(phase: "testing" | "production"): ApplicationDataCallback {
+    return async (app: KubernetesApplication,
+                  p: GitProject,
+                  g: KubernetesDeploy,
+                  goalEvent: SdmGoalEvent,
+                  ctx: HandlerContext) => {
+
+        if (!!goalEvent.data) {
+            let data: any = {};
+            try {
+                data = JSON.parse(goalEvent.data);
+            } catch (e) {
+                logger.warn(`Failed to parse goal data on '${goalEvent.uniqueName}'`);
+            }
+            if (!!data[ElementsGoalsKey] && !!data[ElementsGoalsKey].k8s) {
+                const k8sStack = data[ElementsGoalsKey].k8s as K8sStack;
+
+                app.ns = k8sStack.deploymentMapping[phase].ns;
+                goalEvent.fulfillment.name = k8sStack.deploymentMapping[phase].cluster;
+            }
+        }
+
+        const dockerRegistries = await ctx.graphClient.query<DockerRegistryProvider.Query, DockerRegistryProvider.Variables>({
+            name: "DockerRegistryProvider",
+            variables: {
+                name: `docker-${ctx.workspaceId.toLowerCase()}`,
+            },
+            options: QueryNoCacheOptions,
+        });
+
+        if (!!dockerRegistries && !!dockerRegistries.DockerRegistryProvider) {
+
+            const dockerConfig = {
+                auths: {},
+            } as any;
+
+            for (const dockerRegistry of dockerRegistries.DockerRegistryProvider) {
+
+                const credential = await ctx.graphClient.query<Password.Query, Password.Variables>({
+                    name: "Password",
+                    variables: {
+                        id: dockerRegistry.credential.id,
+                    },
+                });
+
+                dockerConfig.auths[dockerRegistry.url] = {
+                    auth: Buffer.from(credential.Password[0].owner.login + ":" + credential.Password[0].secret).toString("base64"),
+                };
+            }
+
+            const secret: DeepPartial<k8s.V1Secret> = {
+                apiVersion: "v1",
+                kind: "Secret",
+                metadata: {
+                    name: "sdm-imagepullsecret",
+                },
+                type: "kubernetes.io/dockerconfigjson",
+                stringData: {
+                    ".dockerconfigjson": JSON.stringify(dockerConfig),
+                },
+            };
+            if (!!app.secrets) {
+                app.secrets.push(secret);
+            } else {
+                app.secrets = [secret];
+            }
+            app.imagePullSecret = "sdm-imagepullsecret";
+        }
+
+        return app;
+    };
 }
 
 function getNamespace(workspaceId: string): string {

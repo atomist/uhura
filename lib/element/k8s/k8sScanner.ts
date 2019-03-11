@@ -20,10 +20,14 @@ import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import {
+    DeploymentMapping,
+    getCustomDeploymentMapping,
+} from "../../preference/deployment";
 
 export interface K8sStack extends TechnologyElement {
     name: "k8s";
-    firstPush: boolean;
+    deploymentMapping: DeploymentMapping;
 }
 
 export const k8sScanner: TechnologyScanner<K8sStack> = async (p, ctx) => {
@@ -41,12 +45,11 @@ export const k8sScanner: TechnologyScanner<K8sStack> = async (p, ctx) => {
     }
 
     const push: OnPushToAnyBranch.Push = (ctx as any).push;
-    // TODO cd add test to make sure we only deploy the first push
     if (push.branch === push.repo.defaultBranch) {
         const stack: K8sStack = {
             tags: ["k8s"],
             name: "k8s",
-            firstPush: true,
+            deploymentMapping: await getCustomDeploymentMapping(ctx),
         };
         return stack;
     }

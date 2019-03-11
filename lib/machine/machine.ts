@@ -76,6 +76,7 @@ import {
 } from "../generate/universal/seedParameter";
 import { universalGenerator } from "../generate/universal/universalGenerator";
 import { universalNodeGenerator } from "../generate/universal/universalNodeGenerator";
+import { configureDeploymentCommand } from "../preference/deployment";
 import {
     disableCommand,
     disableGoalCommand,
@@ -83,7 +84,7 @@ import {
     enableCommand,
     enableGoalCommand,
     enableOrgCommand,
-} from "../preference/commands";
+} from "../preference/enablement";
 import { IsSdmEnabled } from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultNodeSeeds } from "./nodeSeeds";
@@ -266,6 +267,9 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             .addCommand(disableOrgCommand(sdm))
             .addCommand(enableGoalCommand(sdm))
             .addCommand(disableGoalCommand(sdm));
+
+        // Uhura app deployment into customer provided clusters
+        sdm.addCommand(configureDeploymentCommand(sdm));
 
         // Whenever we see a new repo, add GitHub topics for all technology elements we've found.
         // For example, add "node", "spring" and "docker" topics

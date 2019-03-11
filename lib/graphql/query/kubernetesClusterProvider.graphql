@@ -1,0 +1,6 @@
+query KubernetesClusterProvider {
+    KubernetesClusterProvider {
+        id
+        name
+    }
+}
