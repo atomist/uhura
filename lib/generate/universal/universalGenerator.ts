@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    GitCommandGitProject,
-    logger,
-    Project,
-} from "@atomist/automation-client";
+import { GitCommandGitProject, logger, Project } from "@atomist/automation-client";
 import {
     chainTransforms,
     CommandListenerInvocation,
@@ -29,26 +25,15 @@ import {
     slackInfoMessage,
     slackWarningMessage,
 } from "@atomist/sdm";
-import {
-    ProjectAnalysis,
-    ProjectAnalyzer,
-    TransformRecipeRequest,
-} from "@atomist/sdm-pack-analysis";
+import { ProjectAnalysis, ProjectAnalyzer, TransformRecipeRequest } from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
-    toRepoRef,
+    OptionalSeedParamsDefinitions,
     SeedDrivenCommandConfig,
-    SeedDrivenCommandParams, OptionalSeedParamsDefinitions,
+    SeedDrivenCommandParams,
+    toRepoRef,
 } from "./SeedDrivenCommandParams";
-import { FreeTextSeedUrlParameterDefinition } from "./seedParameter";
-
-/**
- * Command name for the universal generator.
- * Other commands often front the universal generator, feeding it a
- * seedUrl parameter, so it's important to provide a stable name.
- */
-export const UniversalGeneratorName = "UniversalGenerator";
 
 interface Analyzed {
     analysis: ProjectAnalysis;
@@ -60,11 +45,7 @@ interface Analyzed {
  * Driven by registered TransformRecipes returned in a full project analysis.
  */
 export function universalGenerator(projectAnalyzer: ProjectAnalyzer,
-                                   config: SeedDrivenCommandConfig = {
-                                       name: UniversalGeneratorName,
-                                       intent: "create",
-                                       seedParameter: FreeTextSeedUrlParameterDefinition,
-                                   }): GeneratorRegistration<SeedDrivenCommandParams> {
+                                   config: SeedDrivenCommandConfig): GeneratorRegistration<SeedDrivenCommandParams> {
     return {
         ...config,
         parameters: {

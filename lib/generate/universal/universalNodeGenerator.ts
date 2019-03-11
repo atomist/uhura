@@ -29,10 +29,11 @@ import { codeLine } from "@atomist/slack-messages";
 import { SelectedRepo } from "../../common/SelectedRepoFinder";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
+    OptionalSeedParamsDefinitions,
     SeedDrivenCommandConfig,
     SeedDrivenCommandParams,
+    toRepoRef,
 } from "./SeedDrivenCommandParams";
-import { toRepoRef } from "./SeedDrivenCommandParams";
 
 export interface UniversalNodeGeneratorParams extends NodeProjectCreationParameters,
     SeedDrivenCommandParams {
@@ -50,6 +51,7 @@ export function universalNodeGenerator(
         ...config,
         parameters: {
             ...NodeProjectCreationParametersDefinition,
+            ...OptionalSeedParamsDefinitions,
             seedUrl: config.seedParameter,
         },
         startingPoint: pi => {

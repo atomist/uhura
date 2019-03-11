@@ -135,6 +135,7 @@ export function addSeed(projectAnalyzer: ProjectAnalyzer,
         ...config,
         parameters: {
             seedUrl: config.seedParameter,
+            ...OptionalSeedParamsDefinitions,
             description: { description: "Seed project to choose.", pattern: /.*/ },
         },
         listener: async ci => {
@@ -158,9 +159,10 @@ export function removeSeed(
         ...config,
         parameters: {
             seedUrl: config.seedParameter,
+            ...OptionalSeedParamsDefinitions,
         },
         listener: async ci => {
-            await deregisterSeed(ci, ci.parameters.seedUrl);
+            await deregisterSeed(ci, ci.parameters);
         },
     };
 }
@@ -191,18 +193,22 @@ async function registerSeed(ctx: SdmContext, seed: SelectedRepo): Promise<void> 
 
 /**
  * Deregister the repo with the given URL as a seed
- * @param {SdmContext} papi
- * @param {string} seedUrl
  * @return {Promise<void>}
  */
-async function deregisterSeed(papi: SdmContext, seedUrl: string): Promise<void> {
+async function deregisterSeed(papi: SdmContext,
+                              whichSeed: Pick<SeedDrivenCommandParams, "seedUrl" | "ref" | "path">): Promise<void> {
     const seeds = await getSeeds(papi);
-    seeds.seeds = seeds.seeds.filter(seed => seed.url !== seedUrl);
+    // We have multiple seeds from same repo, with different refs or paths.
+    // Don't delete all of them
+    seeds.seeds = seeds.seeds.filter(seed => !(
+        seed.url === whichSeed.seedUrl &&
+        seed.ref === whichSeed.ref &&
+        seed.path === whichSeed.path));
     await papi.preferences.put<Seeds>("seeds", seeds);
     await papi.addressChannels(
         slackSuccessMessage(
             "Seeds",
-            `Successfully removed seed project ${url(seedUrl)}`));
+            `Successfully removed seed project from ${url(whichSeed.seedUrl)}`));
 }
 
 /**

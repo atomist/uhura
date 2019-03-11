@@ -74,10 +74,7 @@ import {
     dropDownSeedUrlParameterDefinition,
     FreeTextSeedUrlParameterDefinition,
 } from "../generate/universal/seedParameter";
-import {
-    universalGenerator,
-    UniversalGeneratorName,
-} from "../generate/universal/universalGenerator";
+import { universalGenerator } from "../generate/universal/universalGenerator";
 import { universalNodeGenerator } from "../generate/universal/universalNodeGenerator";
 import {
     disableCommand,
@@ -90,6 +87,7 @@ import {
 import { IsSdmEnabled } from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultNodeSeeds } from "./nodeSeeds";
+import { DefaultSpringSeeds } from "./springSeeds";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
@@ -129,7 +127,7 @@ export interface UhuraOptions {
 const defaultUhuraOptions: UhuraOptions = {
     name: "Atomist Uhura",
     analyzerFactory: defaultAnalyzerFactory,
-    globalSeeds:  DefaultNodeSeeds,
+    globalSeeds: DefaultNodeSeeds,
     extendedGoals: AnyPush,
 };
 
@@ -216,14 +214,24 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         sdm.addCommand(listSeeds(analyzer));
 
         // Universal generator, which requires dynamic parameters
+        // Support Spring as well as Node out of the box
         sdm.addGeneratorCommand(universalGenerator(analyzer, {
-            name: UniversalGeneratorName,
+            name: "UniversalGenerator",
             intent: `Create ${sdm.configuration.name.replace("@", "")}`,
             description: "create a project from any seed repo, based on analysis",
             seedParameter: FreeTextSeedUrlParameterDefinition,
         }));
 
-        // Create node from a free text input
+        // Create any type of project from a list of seeds
+        sdm.addGeneratorCommand(universalGenerator(analyzer, {
+            name: "CreateAnyFromList",
+            description: "Create a project from a curated list of seed repos",
+            intent: `discover all ${sdm.configuration.name.replace("@", "")}`,
+            seedParameter: dropDownSeedUrlParameterDefinition(
+                ...optsToUse.globalSeeds, ...DefaultSpringSeeds),
+        }));
+
+        // Create Node from a free text input
         sdm.addGeneratorCommand(universalNodeGenerator({
             name: "CreateNode",
             intent: `Create node ${sdm.configuration.name.replace("@", "")}`,
@@ -231,6 +239,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             seedParameter: FreeTextSeedUrlParameterDefinition,
         }));
 
+        // Create Node from a list of seeds
         sdm.addGeneratorCommand(universalNodeGenerator({
             name: "CreateNodeFromList",
             description: "Create a project from a curated list of Node seed repos",
@@ -244,7 +253,10 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             description: "Create a new project, selecting a seed project",
             generatorName: "CreateNode",
             generatorsToShow: 5,
-            sources: [preferencesSeedSource, { description: "Global Seeds", seedFinder: async () => optsToUse.globalSeeds }],
+            sources: [preferencesSeedSource, {
+                description: "Global Seeds",
+                seedFinder: async () => optsToUse.globalSeeds,
+            }],
         }));
 
         // Uhura activation control registrations
@@ -255,6 +267,8 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             .addCommand(enableGoalCommand(sdm))
             .addCommand(disableGoalCommand(sdm));
 
+        // Whenever we see a new repo, add GitHub topics for all technology elements we've found.
+        // For example, add "node", "spring" and "docker" topics
         sdm.addFirstPushListener(publishGitHubTopicsForElements(analyzer, sdm));
 
         // Extension Pack registrations

@@ -1,8 +1,8 @@
 import { BaseParameter, GitHubRepoRef, RemoteRepoRef } from "@atomist/automation-client";
-import { CommandConfig } from "../../common/CommandConfig";
+import { ParametersObject } from "@atomist/sdm";
 import { isValidSHA1 } from "@atomist/sdm-local/lib/common/git/handlePushBasedEventOnRepo";
 import gitUrlParse = require("git-url-parse");
-import { ParametersObject } from "@atomist/sdm";
+import { CommandConfig } from "../../common/CommandConfig";
 
 export interface SeedDrivenCommandParams {
 
@@ -43,7 +43,7 @@ export function toRepoRef(params: SeedDrivenCommandParams): RemoteRepoRef {
 }
 
 /**
- * Optional parameter definitions
+ * Optional parameter definitions for ref and path
  */
 export const OptionalSeedParamsDefinitions: ParametersObject<Pick<SeedDrivenCommandParams, "ref" | "path">> = {
     ref: {

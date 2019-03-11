@@ -21,7 +21,7 @@ import {
     SnipTransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
 import { nodeStackSupport } from "@atomist/sdm-pack-node";
-import { springBootScanner } from "@atomist/sdm-pack-spring";
+import { springBootStackSupport } from "@atomist/sdm-pack-spring";
 import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
 import { dockerScanner } from "../element/docker/dockerScanner";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
@@ -42,7 +42,9 @@ export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
         .withStack(nodeStackSupport({
             configureTestGoal: g => g.withService(Mongo),
         }))
-        .withScanner(springBootScanner)
+        .withStack(springBootStackSupport({
+            deployLocally: true,
+        }))
         .withScanner(dockerScanner)
         .withScanner(k8sScanner)
         .withScanner(travisScanner)

@@ -19,8 +19,14 @@ import {
     SdmContext,
 } from "@atomist/sdm";
 
+/**
+ * Repo we are interested in, as a seed or for other reasons.
+ */
 export interface SelectedRepo {
 
+    /**
+     * git URL of the repo, such as https://github.com/my-org/my-node-seed
+     */
     url: string;
 
     /**
@@ -42,7 +48,7 @@ export interface SelectedRepo {
 }
 
 /**
- * Find repos of interest
+ * Function that can find repos of interest
  */
 export type SelectedRepoFinder = (ctx: SdmContext) => Promise<SelectedRepo[]>;
 

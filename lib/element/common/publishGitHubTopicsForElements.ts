@@ -36,7 +36,7 @@ import {
 import * as slack from "@atomist/slack-messages";
 
 /**
- * Add GitHub topics to the new repo for tags
+ * Add GitHub topics to the new repo for elements we've found in the project
  */
 export function publishGitHubTopicsForElements(projectAnalyzer: ProjectAnalyzer,
                                                sdm: SoftwareDeliveryMachine): ProjectListener {
