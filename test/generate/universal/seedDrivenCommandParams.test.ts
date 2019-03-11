@@ -16,7 +16,10 @@
 
 import { ParametersObjectValue } from "@atomist/sdm/lib/api/registration/ParametersDefinition";
 import * as assert from "assert";
-import { OptionalSeedParamsDefinitions, toRepoRef } from "../../../lib/generate/universal/SeedDrivenCommandParams";
+import {
+    OptionalSeedParamsDefinitions,
+    toRepoRef,
+} from "../../../lib/generate/universal/SeedDrivenCommandParams";
 
 describe("seedDrivenParams", () => {
 

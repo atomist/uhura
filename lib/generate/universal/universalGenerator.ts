@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { GitCommandGitProject, logger, Project } from "@atomist/automation-client";
+import {
+    GitCommandGitProject,
+    logger,
+    Project,
+} from "@atomist/automation-client";
 import {
     chainTransforms,
     CommandListenerInvocation,
@@ -25,7 +29,11 @@ import {
     slackInfoMessage,
     slackWarningMessage,
 } from "@atomist/sdm";
-import { ProjectAnalysis, ProjectAnalyzer, TransformRecipeRequest } from "@atomist/sdm-pack-analysis";
+import {
+    ProjectAnalysis,
+    ProjectAnalyzer,
+    TransformRecipeRequest,
+} from "@atomist/sdm-pack-analysis";
 import * as _ from "lodash";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {

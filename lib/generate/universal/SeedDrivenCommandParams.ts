@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { BaseParameter, GitHubRepoRef, RemoteRepoRef } from "@atomist/automation-client";
+import {
+    BaseParameter,
+    GitHubRepoRef,
+    RemoteRepoRef,
+} from "@atomist/automation-client";
 import { ParametersObject } from "@atomist/sdm";
 import { isValidSHA1 } from "@atomist/sdm-local/lib/common/git/handlePushBasedEventOnRepo";
 import gitUrlParse = require("git-url-parse");
