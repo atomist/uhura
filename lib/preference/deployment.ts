@@ -87,7 +87,7 @@ Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")
                 cluster: { type: { kind: "single", options: k8sClusters.map(c => ({ value: c, description: c })) } },
             });
 
-            await ci.preferences.put(`k8s.deployment.${ci.parameters.goal}`, mapping, { scope: PreferenceScope.Sdm });
+            await ci.preferences.put(`k8s.deployment.${ci.parameters.goal}`, { ...mapping, ns: ci.parameters.ns }, { scope: PreferenceScope.Sdm });
             await ci.addressChannels(
                 slackSuccessMessage(
                     "Configure Deployment",
