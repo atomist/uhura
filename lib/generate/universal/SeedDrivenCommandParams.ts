@@ -80,5 +80,5 @@ export const OptionalSeedParamsDefinitions: ParametersObject<Pick<SeedDrivenComm
 };
 
 function isValidSHA1(s: string): boolean {
-    return s.match(/[a-fA-F0-9]{40}/) != null;
+    return s.match(/[a-fA-F0-9]{40}/) !== null;
 }
