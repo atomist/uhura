@@ -20,7 +20,6 @@ import {
     RemoteRepoRef,
 } from "@atomist/automation-client";
 import { ParametersObject } from "@atomist/sdm";
-import { isValidSHA1 } from "@atomist/sdm-local/lib/common/git/handlePushBasedEventOnRepo";
 import gitUrlParse = require("git-url-parse");
 import { CommandConfig } from "../../common/CommandConfig";
 
@@ -79,3 +78,7 @@ export const OptionalSeedParamsDefinitions: ParametersObject<Pick<SeedDrivenComm
         pattern: /^([\w\$]+[/]?)+$/,
     },
 };
+
+function isValidSHA1(s: string): boolean {
+    return s.match(/[a-fA-F0-9]{40}/) != null;
+}
