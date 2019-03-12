@@ -40,23 +40,26 @@ export interface DeploymentMapping {
     production: ClusterAndNamespace;
 }
 
-export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ phase: string, cluster: string, ns: string }> {
+export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ goal: string, cluster: string, ns: string }> {
     return {
         name: "ConfigureDeployment",
         intent: `configure deployment ${sdm.configuration.name.replace("@", "")}`,
         description: "Configure deployment to k8s clusters",
         autoSubmit: true,
         parameters: {
-            phase: {
+            goal: {
+                description: "",
                 required: true,
                 type: { kind: "single", options: [{ value: "testing", description: "Testing" }, { value: "production", description: "Production" }] },
             },
             cluster: {
+                description: "Name of the k8s cluster as registered with Atomist (typically this the registration name of k8s-sdm)",
                 required: false,
                 type: "string",
             },
             ns: {
-                required: false,
+                description: "Namespace within the k8s cluster to deploy to (typically this is testing or production)",
+                required: true,
                 type: "string",
             },
         },
@@ -80,16 +83,15 @@ Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")
             }
 
             // Now ask for the actual mapping from the phase to the cluster and namespace
-            const mapping = await ci.promptFor<ClusterAndNamespace>({
+            const mapping = await ci.promptFor<{ cluster: string }>({
                 cluster: { type: { kind: "single", options: k8sClusters.map(c => ({ value: c, description: c })) } },
-                ns: { type: "string" },
             });
 
-            await ci.preferences.put(`k8s.deployment.${ci.parameters.phase}`, mapping, { scope: PreferenceScope.Sdm });
+            await ci.preferences.put(`k8s.deployment.${ci.parameters.goal}`, mapping, { scope: PreferenceScope.Sdm });
             await ci.addressChannels(
                 slackSuccessMessage(
                     "Configure Deployment",
-                    `Successfully configured ${italic(ci.parameters.phase)} deployments for ${codeLine(`${mapping.cluster}:${mapping.ns}`)}`));
+                    `Successfully configured ${italic(ci.parameters.goal)} deployments for ${codeLine(`${mapping.cluster}:${ci.parameters.ns}`)}`));
         },
     };
 }
