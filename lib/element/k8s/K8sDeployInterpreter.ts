@@ -284,12 +284,7 @@ export async function applicationDataCallback(app: KubernetesApplication,
         spec: {
             template: {
                 spec: {
-                    containers: [{
-                        securityContext: {
-                            runAsUser: 1000,
-                            allowPrivilegeEscalation: false,
-                        },
-                    }],
+                    containers: [{}],
                 },
             },
         },
