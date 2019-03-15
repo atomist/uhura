@@ -61,6 +61,7 @@ import { DeepPartial } from "ts-essentials";
 import * as url from "url";
 import {
     DockerRegistryProvider,
+    KubernetesClusterProvider,
     Password,
 } from "../../typings/types";
 import { Mongo } from "../mongo/spec";
@@ -357,7 +358,15 @@ export function customApplicationDataCallback(phase: "testing" | "production"): 
                 goalEvent.fulfillment.name = k8sStack.deploymentMapping[phase].cluster;
 
                 if (!app.ingressSpec) {
-                    const clusterUrl = "http://192.168.99.104"; // TODO change once we have it on the k8s cluster provider
+
+                    const k8sCluster = await ctx.graphClient.query<KubernetesClusterProvider.Query, KubernetesClusterProvider.Variables>({
+                        name: "KubernetesClusterProvider",
+                        variables: {
+                            name: k8sStack.deploymentMapping[phase].cluster,
+                        },
+                    });
+
+                    const clusterUrl = _.get(k8sCluster, "KubernetesClusterProvider[0].url");
                     if (!!clusterUrl) {
                         const u = url.parse(clusterUrl);
                         app.host = `${p.name}.${app.ns}.${u.host}.nip.io`;
