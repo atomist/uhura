@@ -58,6 +58,7 @@ import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
 import * as randomWord from "random-word";
 import { DeepPartial } from "ts-essentials";
+import * as url from "url";
 import {
     DockerRegistryProvider,
     Password,
@@ -354,6 +355,15 @@ export function customApplicationDataCallback(phase: "testing" | "production"): 
 
                 app.ns = k8sStack.deploymentMapping[phase].ns;
                 goalEvent.fulfillment.name = k8sStack.deploymentMapping[phase].cluster;
+
+                if (!app.ingressSpec) {
+                    const clusterUrl = "http://192.168.99.104"; // TODO change once we have it on the k8s cluster provider
+                    if (!!clusterUrl) {
+                        const u = url.parse(clusterUrl);
+                        app.host = `${p.name}.${app.ns}.${u.host}.nip.io`;
+                        app.path = "/";
+                    }
+                }
             }
         }
 
