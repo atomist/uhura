@@ -54,7 +54,8 @@ export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): Comman
                 type: { kind: "single", options: [{ value: "testing", description: "Testing" }, { value: "production", description: "Production" }] },
             },
             cluster: {
-                description: "Name of the k8s cluster as registered with Atomist (typically this the registration name of k8s-sdm or the environment when running 'atomist kube')",
+                description: "Name of the k8s cluster as registered with Atomist (typically this the registration name " +
+                    "of k8s-sdm or the environment when running 'atomist kube')",
                 required: false,
                 type: "string",
             },
@@ -105,7 +106,10 @@ Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")
                 return;
             }
 
-            await ci.preferences.put(`k8s.deployment.${ci.parameters.goal}`, { cluster: k8sCluster, ns: ci.parameters.ns }, { scope: PreferenceScope.Sdm });
+            await ci.preferences.put(
+                `k8s.deployment.${ci.parameters.goal}`,
+                { cluster: k8sCluster, ns: ci.parameters.ns },
+                { scope: PreferenceScope.Sdm });
             await ci.addressChannels(
                 slackSuccessMessage(
                     "Configure Deployment",
