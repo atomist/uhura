@@ -1,5 +1,5 @@
-query KubernetesClusterProvider {
-    KubernetesClusterProvider {
+query KubernetesClusterProviderForName($name: String) {
+    KubernetesClusterProvider(name: $name) {
         id
         name
         url
