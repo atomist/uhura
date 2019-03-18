@@ -20,8 +20,8 @@ import {
     preferencesScanner,
     SnipTransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
+import { nodeStackSupport } from "@atomist/sdm-pack-analysis-node";
 import { springBootStackSupport } from "@atomist/sdm-pack-analysis-spring";
-import { nodeStackSupport } from "@atomist/sdm-pack-node";
 import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
 import { dockerScanner } from "../element/docker/dockerScanner";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
