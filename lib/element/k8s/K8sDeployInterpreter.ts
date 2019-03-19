@@ -61,7 +61,7 @@ import { DeepPartial } from "ts-essentials";
 import * as url from "url";
 import {
     DockerRegistryProvider,
-    KubernetesClusterProviderForName,
+    KubernetesClusterProvider,
     Password,
 } from "../../typings/types";
 import { Mongo } from "../mongo/spec";
@@ -359,7 +359,7 @@ export function customApplicationDataCallback(phase: "testing" | "production"): 
 
                 if (!app.ingressSpec) {
 
-                    const k8sCluster = await ctx.graphClient.query<KubernetesClusterProviderForName.Query, KubernetesClusterProviderForName.Variables>({
+                    const k8sCluster = await ctx.graphClient.query<KubernetesClusterProvider.Query, KubernetesClusterProvider.Variables>({
                         name: "KubernetesClusterProviderForName",
                         variables: {
                             name: k8sStack.deploymentMapping[phase].cluster,
