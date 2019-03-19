@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased](https://github.com/atomisthq/global-sdm/compare/0.0.35...HEAD)
 
+### Added
+
+-   Custom ingress for k8s cluster deployments. [#9](https://github.com/atomist/uhura/issues/9)
+
 ## [0.0.35](https://github.com/atomisthq/global-sdm/compare/0.0.34...0.0.35) - 2019-02-13
 
 ### Changed
