@@ -19,6 +19,7 @@ import {
     CommandHandlerRegistration,
     PreferenceScope,
     SdmContext,
+    slackErrorMessage,
     slackSuccessMessage,
     slackWarningMessage,
     SoftwareDeliveryMachine,
@@ -53,7 +54,8 @@ export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): Comman
                 type: { kind: "single", options: [{ value: "testing", description: "Testing" }, { value: "production", description: "Production" }] },
             },
             cluster: {
-                description: "Name of the k8s cluster as registered with Atomist (typically this the registration name of k8s-sdm)",
+                description: "Name of the k8s cluster as registered with Atomist (typically this the registration name " +
+                    "of k8s-sdm or the environment when running 'atomist kube')",
                 required: false,
                 type: "string",
             },
@@ -76,7 +78,8 @@ export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): Comman
                         "Configure Deployment",
                         `No Kubernetes clusters have been registered with this workspace.
 
-Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")} to configure a Kubernetes cluster.`, ci.context));
+Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")} to configure a Kubernetes cluster.`,
+                        ci.context));
                 return;
             } else {
                 k8sClusters = k8sClusterResult.KubernetesClusterProvider.map(k => k.name);
@@ -84,10 +87,29 @@ Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")
 
             // Now ask for the actual mapping from the phase to the cluster and namespace
             const mapping = await ci.promptFor<{ cluster: string }>({
-                cluster: { type: { kind: "single", options: k8sClusters.map(c => ({ value: c, description: c })) } },
+                cluster: {
+                    type: {
+                        kind: "single",
+                        options: k8sClusters.map(c => ({ value: c, description: c.replace(/^@.*?\//, "").replace(/^.*?_/, "") })),
+                    },
+                },
             });
 
-            await ci.preferences.put(`k8s.deployment.${ci.parameters.goal}`, { ...mapping, ns: ci.parameters.ns }, { scope: PreferenceScope.Sdm });
+            // Allow to specify the cluster with only the suffix
+            const k8sCluster = k8sClusters.find(k => k === mapping.cluster || k === `@atomist/k8s-sdm_${mapping.cluster}`);
+            if (!k8sCluster) {
+                await ci.addressChannels(
+                    slackErrorMessage(
+                        "Configure Deployment",
+                        `No Kubernetes cluster ${codeLine(mapping.cluster)} configured`,
+                        ci.context));
+                return;
+            }
+
+            await ci.preferences.put(
+                `k8s.deployment.${ci.parameters.goal}`,
+                { cluster: k8sCluster, ns: ci.parameters.ns },
+                { scope: PreferenceScope.Sdm });
             await ci.addressChannels(
                 slackSuccessMessage(
                     "Configure Deployment",

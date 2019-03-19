@@ -58,8 +58,10 @@ import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
 import * as randomWord from "random-word";
 import { DeepPartial } from "ts-essentials";
+import * as url from "url";
 import {
     DockerRegistryProvider,
+    KubernetesClusterProviderForName,
     Password,
 } from "../../typings/types";
 import { Mongo } from "../mongo/spec";
@@ -354,6 +356,23 @@ export function customApplicationDataCallback(phase: "testing" | "production"): 
 
                 app.ns = k8sStack.deploymentMapping[phase].ns;
                 goalEvent.fulfillment.name = k8sStack.deploymentMapping[phase].cluster;
+
+                if (!app.ingressSpec) {
+
+                    const k8sCluster = await ctx.graphClient.query<KubernetesClusterProviderForName.Query, KubernetesClusterProviderForName.Variables>({
+                        name: "KubernetesClusterProviderForName",
+                        variables: {
+                            name: k8sStack.deploymentMapping[phase].cluster,
+                        },
+                    });
+
+                    const clusterUrl = _.get(k8sCluster, "KubernetesClusterProvider[0].url");
+                    if (!!clusterUrl) {
+                        const u = url.parse(clusterUrl);
+                        app.host = `${p.name}.${app.ns}.${u.host}.nip.io`;
+                        app.path = "/";
+                    }
+                }
             }
         }
 
