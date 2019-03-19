@@ -55,7 +55,6 @@ import {
     CacheScope,
     npmInstallProjectListener,
 } from "@atomist/sdm-pack-node";
-import { esLintReviewCategory } from "@atomist/sdm-pack-node/lib/inspection/eslint";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
@@ -154,7 +153,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         analyzer.autofixGoal.withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
         analyzer.codeInspectionGoal
-            .withListener(singleIssuePerCategoryManaging(esLintReviewCategory, true, () => true))
+            .withListener(singleIssuePerCategoryManaging(configuration.name, true, () => true))
             .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
         interface Interpreted {
@@ -285,7 +284,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 labelIssuesOnDeployment: true,
                 closeCodeInspectionIssuesOnBranchDeletion: {
                     enabled: true,
-                    source: esLintReviewCategory,
+                    source: configuration.name,
                 },
             }),
             /*fingerprintSupport({
