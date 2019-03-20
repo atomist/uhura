@@ -269,7 +269,7 @@ export async function applicationDataCallback(app: KubernetesApplication,
                                               p: GitProject,
                                               g: KubernetesDeploy,
                                               goalEvent: SdmGoalEvent): Promise<KubernetesApplication> {
-    app.host = `${randomWord().toLowerCase()}-${randomWord().toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
+    app.host = `${randomWord().toLowerCase()}-${randomWord().toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.io`;
     app.path = "/";
     app.ns = getNamespace(app.workspaceId);
     app.imagePullSecret = "sdm-imagepullsecret";
