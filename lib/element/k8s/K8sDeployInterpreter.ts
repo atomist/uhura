@@ -286,6 +286,7 @@ export async function applicationDataCallback(app: KubernetesApplication,
             template: {
                 spec: {
                     containers: [{}],
+                    serviceAccountName: "sdm-noaccess",
                 },
             },
         },
