@@ -203,7 +203,7 @@ export class K8sDeployInterpreter implements Interpreter {
 
                 try {
                     const ns = getNamespace(context.workspaceId);
-                    const selector = `atomist.com/goal-set-id=${goalEvent.goalSetId}`;
+                    const selector = `atomist.com/goal-set-id=${goalEvent.goalSetId},atomist.com/sdm-purpose=application`;
                     const deployments = (await apps.listNamespacedDeployment(
                         ns,
                         undefined,
@@ -211,7 +211,7 @@ export class K8sDeployInterpreter implements Interpreter {
                         undefined,
                         undefined,
                         selector))
-                        .body.items.filter(d => d.metadata.name === goalEvent.repo.name);
+                        .body.items || [];
 
                     logger.debug(`The following deployments were found in k8s: '${
                         deployments.map(d => `${d.metadata.namespace}:${d.metadata.name}`).join(", ")}'`);
