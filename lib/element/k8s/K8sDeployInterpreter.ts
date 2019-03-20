@@ -269,7 +269,6 @@ export async function applicationDataCallback(app: KubernetesApplication,
                                               p: GitProject,
                                               g: KubernetesDeploy,
                                               goalEvent: SdmGoalEvent): Promise<KubernetesApplication> {
-    app.name = p.name;
     app.host = `${randomWord().toLowerCase()}-${randomWord().toLowerCase()}-${app.workspaceId.toLowerCase()}.g.atomist.com`;
     app.path = "/";
     app.ns = getNamespace(app.workspaceId);
