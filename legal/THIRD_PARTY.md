@@ -44,7 +44,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
-|`@atomist/sdm-core`|`1.3.1-master.20190320073316`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
+|`@atomist/sdm-core`|`1.3.1-master.20190320095857`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
 |`@atomist/sdm-pack-analysis-node`|`1.0.0-master.20190319110410`|Atomist|[https://github.com/atomist/sdm-pack-analysis-node](https://github.com/atomist/sdm-pack-analysis-node)|
 |`@atomist/sdm-pack-analysis-spring`|`1.0.0-master.20190318132808`|Atomist|[https://github.com/atomist/sdm-pack-analysis-spring](https://github.com/atomist/sdm-pack-analysis-spring)|
 |`@atomist/sdm-pack-analysis`|`0.1.0-master.20190303112340`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
