@@ -48,7 +48,6 @@
     "fs-extra": "^7.0.1",
     "git-url-parse": "^11.1.2",
     "lodash": "^4.17.11",
-    "random-word": "^2.0.0",
     "ts-essentials": "^1.0.2",
     "yamljs": "^0.3.0"
   },
