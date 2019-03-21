@@ -22,6 +22,7 @@ import { K8sServiceRegistrationType } from "@atomist/sdm-core/lib/pack/k8s/servi
 import { Services } from "@atomist/sdm-pack-analysis";
 import { ServicesGoalsKey } from "@atomist/sdm-pack-analysis/lib/analysis/support/enrichGoal";
 import * as k8s from "@kubernetes/client-node";
+import { DeepPartial } from "ts-essentials";
 
 /**
  * Default mongo service for this SDM
@@ -34,7 +35,7 @@ export const Mongo = mongo();
  */
 export function mongo(tag: string = "latest"): K8sServiceRegistration {
 
-    const container: k8s.V1Container = {
+    const container: DeepPartial<k8s.V1Container> = {
         name: "mongo",
         image: `mongo:${tag}`,
         imagePullPolicy: "IfNotPresent",
@@ -54,13 +55,38 @@ export function mongo(tag: string = "latest"): K8sServiceRegistration {
             },
         },
         securityContext: {
-            runAsUser: 999,
             allowPrivilegeEscalation: false,
+            privileged: false,
+            readOnlyRootFilesystem: true,
+            runAsGroup: 999,
+            runAsUser: 999,
         },
-    } as any;
+        volumeMounts: [
+            {
+                mountPath: "/data/db",
+                name: "mongo-data",
+            },
+            {
+                mountPath: "/tmp",
+                name: "mongo-tmp",
+            },
+        ],
+    };
+
+    const volumes: Array<DeepPartial<k8s.V1Volume>> = [
+        {
+            emptyDir: {},
+            name: "mongo-data",
+        },
+        {
+            emptyDir: {},
+            name: "mongo-tmp",
+        },
+    ];
 
     const spec: K8sServiceSpec = {
-        container,
+        container: container as k8s.V1Container,
+        volume: volumes as k8s.V1Volume[],
     };
 
     return {
