@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { logger, toStringArray } from "@atomist/automation-client";
+import {
+    logger,
+    toStringArray,
+} from "@atomist/automation-client";
 import {
     Services,
     TechnologyScanner,
