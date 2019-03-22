@@ -242,4 +242,3 @@ deploy:
       tags: true
       condition: >
         "$TRAVIS_TAG" == *"-"*`;
-
