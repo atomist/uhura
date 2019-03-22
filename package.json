@@ -26,7 +26,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "dependencies": {
-    "@atomist/automation-client": "1.3.1-master.20190319111921",
+    "@atomist/automation-client": "^1.3.1-nortissej.supresTokenOnCloneUrl.20190319214833",
     "@atomist/microgrammar": "1.1.0-master.20190205190919",
     "@atomist/sdm": "1.3.1-master.20190320085838",
     "@atomist/sdm-core": "1.3.1-master.20190320112107",
@@ -37,7 +37,7 @@
     "@atomist/sdm-pack-docker": "1.1.0-master.20190213113315",
     "@atomist/sdm-pack-fingerprints": "2.0.0-updates.20190208003156",
     "@atomist/sdm-pack-issue": "1.1.1-master.20190319131841",
-    "@atomist/sdm-pack-k8s": "1.4.0-master.20190319211301",
+    "@atomist/sdm-pack-k8s": "^1.4.1",
     "@atomist/sdm-pack-node": "1.0.3-master.20190320034452",
     "@atomist/slack-messages": "^1.1.0",
     "@kubernetes/client-node": "^0.8.1",
