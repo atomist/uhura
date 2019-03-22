@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { logger } from "@atomist/automation-client";
+import { logger, toStringArray } from "@atomist/automation-client";
 import {
     Services,
     TechnologyScanner,
@@ -106,10 +106,10 @@ export const travisScanner: TechnologyScanner<TravisCi> = async p => {
             env,
             addons: nativeObject.addons,
             beforeInstall: nativeObject.before_install ?
-                [nativeObject.before_install] :
+                toStringArray(nativeObject.before_install) :
                 [],
             afterSuccess: nativeObject.after_success ?
-                [nativeObject.after_success] :
+                toStringArray(nativeObject.after_success) :
                 [],
             services,
             referencedEnvironmentVariables: [],

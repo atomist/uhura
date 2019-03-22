@@ -110,6 +110,21 @@ describe("travis scanner", () => {
         assert(!!scanned.addons);
     });
 
+    it("should save before_install", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: satchelJsYaml,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!!scanned.beforeInstall);
+        assert.strictEqual(scanned.beforeInstall.length, 2);
+        const expectedScripts = [
+            "npm config set spin false",
+            "npm i -g makeshift && makeshift -r https://registry.npmjs.org",
+        ];
+        assert.deepStrictEqual(scanned.beforeInstall, expectedScripts);
+    });
+
 });
 
 const simpleTravis = `language: node_js
@@ -189,3 +204,42 @@ const travisJson = `{
     "npm run test"
   ]
 }`;
+
+// From MSFT GitHub satcheljs
+const satchelJsYaml = `language: node_js
+node_js:
+- "node"
+before_install:
+- npm config set spin false
+- npm i -g makeshift && makeshift -r https://registry.npmjs.org
+install:
+- yarn
+script:
+- |
+  if [ -n "$TRAVIS_TAG" ]; then
+    npm run build
+  fi
+- |
+  if [ "$TRAVIS_PULL_REQUEST" = "true" ]; then
+    bash npm run test
+  fi
+deploy:
+  - provider: npm
+    skip_cleanup: true
+    email: kchau@microsoft.com
+    api_key: $NPM_TOKEN
+    tag: latest
+    on:
+      tags: true
+      condition: >
+        "$TRAVIS_TAG" != *"-"*
+  - provider: npm
+    skip_cleanup: true
+    email: kchau@microsoft.com
+    api_key: $NPM_TOKEN
+    tag: next
+    on:
+      tags: true
+      condition: >
+        "$TRAVIS_TAG" == *"-"*`;
+
