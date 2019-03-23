@@ -26,6 +26,14 @@ import {
 import * as yaml from "yamljs";
 
 /**
+ * Travis rules for building branches
+ */
+export interface TravisBranchRules {
+    except: string[];
+    only: string[];
+}
+
+/**
  * Represents what we know about Travis CI from the travis.yml file
  */
 export interface TravisCi extends TechnologyStack {
@@ -33,6 +41,8 @@ export interface TravisCi extends TechnologyStack {
     language: string;
 
     name: "travis";
+
+    branches?: TravisBranchRules;
 
     beforeInstall: string[];
 
@@ -106,9 +116,18 @@ export const travisScanner: TechnologyScanner<TravisCi> = async p => {
                 services[e] = {};
             }
         }
+
+        const branches: TravisBranchRules = nativeObject.branches ?
+            {
+                only: nativeObject.branches.only ? toStringArray(nativeObject.branches.only) : [],
+                except: nativeObject.branches.except ? toStringArray(nativeObject.branches.except) : [],
+            } :
+            undefined;
+
         const travis: TravisCi = {
             name: "travis",
             projectName: p.name,
+            branches,
             language: nativeObject.language,
             scripts: nativeObject.script || [],
             env,

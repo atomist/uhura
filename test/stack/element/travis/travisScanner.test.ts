@@ -154,6 +154,48 @@ describe("travis scanner", () => {
         assert.deepStrictEqual(scanned.nodeJs, [ "node", "lts/*"]);
     });
 
+    it("should not find branch rules unless specified", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: notifications,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!scanned.branches);
+    });
+
+    it("should find branch rules when only specified", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: onlyBranchYml,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!!scanned.branches);
+        assert.deepStrictEqual(scanned.branches.only, [ "master", "stable"]);
+    });
+
+    it("should find branch rules when except specified", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: exceptBranchYml,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!!scanned.branches);
+        assert.deepStrictEqual(scanned.branches.except, [ "legacy", "experimental"]);
+    });
+
+    // TODO this appears to be legal. See https://docs.travis-ci.com/user/customizing-the-build/#building-specific-branches
+    // But it's not getting merged after parsing
+    it.skip("should find branch rules when both only and except specified", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: bothBranchesYml,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!!scanned.branches);
+        assert.deepStrictEqual(scanned.branches.except, [ "legacy", "experimental"]);
+        assert.deepStrictEqual(scanned.branches.only, [ "master", "stable"]);
+    });
+
 });
 
 const simpleTravis = `language: node_js
@@ -276,3 +318,28 @@ const jdkYaml = `jdk:
   - oraclejdk8
   - oraclejdk9
   - openjdk8`;
+
+const onlyBranchYml = `
+# safelist
+branches:
+  only:
+  - master
+  - stable`;
+
+const exceptBranchYml = `
+branches:
+  except:
+  - legacy
+  - experimental`;
+
+const bothBranchesYml = `# blocklist
+branches:
+  except:
+  - legacy
+  - experimental
+
+# safelist
+branches:
+  only:
+  - master
+  - stable`;
