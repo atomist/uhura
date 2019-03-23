@@ -129,7 +129,9 @@ export const travisScanner: TechnologyScanner<TravisCi> = async p => {
             projectName: p.name,
             branches,
             language: nativeObject.language,
-            scripts: nativeObject.script || [],
+            scripts: nativeObject.script ?
+                toStringArray(nativeObject.script) :
+                [],
             env,
             addons: nativeObject.addons,
             beforeInstall: nativeObject.before_install ?

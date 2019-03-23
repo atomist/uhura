@@ -36,6 +36,15 @@ describe("travis scanner", () => {
         assert.deepStrictEqual(scanned.scripts, []);
     });
 
+    it("should find single script", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: singleScriptTravis,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: false });
+        assert.deepStrictEqual(scanned.scripts, ["npm start test"]);
+    });
+
     it("should find scripts", async () => {
         const p = InMemoryProject.of({
             path: ".travis.yml",
@@ -211,6 +220,10 @@ env:
   - DB=postgres
   - SH=bash
   - PACKAGE_VERSION="1.0.*"`;
+
+const singleScriptTravis = `language: node_js
+script: npm start test
+`;
 
 const servicesTravis = `language: node_js
 node_js:
