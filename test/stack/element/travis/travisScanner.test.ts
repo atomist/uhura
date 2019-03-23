@@ -125,6 +125,35 @@ describe("travis scanner", () => {
         assert.deepStrictEqual(scanned.beforeInstall, expectedScripts);
     });
 
+    it("should find no node_js", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: jdkYaml,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert.strictEqual(scanned.nodeJs.length, 0);
+    });
+
+    it("should find single node_js", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: simpleTravis,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!!scanned.nodeJs);
+        assert.deepStrictEqual(scanned.nodeJs, [ "8.9.4"]);
+    });
+
+    it("should find multiple node_js", async () => {
+        const p = InMemoryProject.of({
+            path: ".travis.yml",
+            content: notifications,
+        });
+        const scanned = await travisScanner(p, undefined, undefined, { full: true });
+        assert(!!scanned.nodeJs);
+        assert.deepStrictEqual(scanned.nodeJs, [ "node", "lts/*"]);
+    });
+
 });
 
 const simpleTravis = `language: node_js
@@ -242,3 +271,8 @@ deploy:
       tags: true
       condition: >
         "$TRAVIS_TAG" == *"-"*`;
+
+const jdkYaml = `jdk:
+  - oraclejdk8
+  - oraclejdk9
+  - openjdk8`;

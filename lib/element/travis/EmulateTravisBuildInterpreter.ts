@@ -40,7 +40,7 @@ import { mongo } from "../mongo/spec";
 import {
     TravisCi,
     travisScanner,
-    usesUsupportedFeatures,
+    usesUnsupportedFeatures,
 } from "./travisScanner";
 
 /**
@@ -112,7 +112,7 @@ export class EmulateTravisBuildInterpreter implements Interpreter {
 
         const travis = interpretation.reason.analysis.elements.travis as TravisCi;
 
-        if (usesUsupportedFeatures(travis)) {
+        if (usesUnsupportedFeatures(travis)) {
             // We can't emulate Travis services, at least for now
             return false;
         }

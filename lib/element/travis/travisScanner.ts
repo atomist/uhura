@@ -41,6 +41,11 @@ export interface TravisCi extends TechnologyStack {
     scripts: string[];
 
     /**
+     * If this is a Node project, return the values of the node_js stanza
+     */
+    nodeJs: string[];
+
+    /**
      * This is for browser testing
      */
     addons: any | undefined;
@@ -59,7 +64,7 @@ export interface TravisCi extends TechnologyStack {
  * @param {TravisCi} travis
  * @return {boolean}
  */
-export function usesUsupportedFeatures(travis: TravisCi): boolean {
+export function usesUnsupportedFeatures(travis: TravisCi): boolean {
     if (!!travis.addons) {
         // We can't emulate Travis addons, at least for now
         return true;
@@ -117,8 +122,11 @@ export const travisScanner: TechnologyScanner<TravisCi> = async p => {
             services,
             referencedEnvironmentVariables: [],
             tags: ["travis"],
+            nodeJs: nativeObject.node_js ?
+                toStringArray(nativeObject.node_js) :
+                [],
         };
-        travis.canEmulate = !usesUsupportedFeatures(travis);
+        travis.canEmulate = !usesUnsupportedFeatures(travis);
         return travis;
     } catch (e) {
         logger.warn("Cannot parse YAML file: %s", e.message);

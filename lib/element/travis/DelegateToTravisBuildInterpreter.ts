@@ -22,7 +22,7 @@ import {
 import { Build } from "@atomist/sdm-pack-build";
 import {
     TravisCi,
-    usesUsupportedFeatures,
+    usesUnsupportedFeatures,
 } from "./travisScanner";
 
 /**
@@ -42,7 +42,7 @@ export class DelegateToTravisBuildInterpreter implements Interpreter {
             return false;
         }
         const travis = interpretation.reason.analysis.elements.travis as TravisCi;
-        if (!interpretation.buildGoals || usesUsupportedFeatures(travis)) {
+        if (!interpretation.buildGoals || usesUnsupportedFeatures(travis)) {
             // !isSatisfied(interpretation.reason.analysis.elements.travis, interpretation)) {
             // TODO undo previous one? Requirements
             interpretation.buildGoals =
