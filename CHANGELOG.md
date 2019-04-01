@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 -   Custom ingress for k8s cluster deployments. [#9](https://github.com/atomist/uhura/issues/9)
 
+### Changed
+
+-   Uses atomist-seeds provided seeds so that dashboard works with uhura. [#16](https://github.com/atomist/uhura/issues/16)
+
 ### Removed
 
 -   Remove test deploy goals. [#10](https://github.com/atomist/uhura/issues/10)
