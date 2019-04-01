@@ -21,15 +21,15 @@ import { SelectedRepo } from "../common/SelectedRepoFinder";
  */
 export const DefaultNodeSeeds: SelectedRepo[] = [
     {
-        url: "https://github.com/sahat/hackathon-starter",
+        url: "https://github.com/atomist-seeds/hackathon-starter",
         description: "Node boilerplate (Hackathon starter)",
     },
     {
-        url: "https://github.com/kimjuny/koa-react-universal",
+        url: "https://github.com/atomist-seeds/koa-react-universal",
         description: "Lightweight React-Koa2 universal boilerplate",
     },
     {
-        url: "https://github.com/developit/express-es6-rest-api",
+        url: "https://github.com/atomist-seeds/express-es6-rest-api",
         description: "ES6 RESTful Express API",
     },
 ];
