@@ -1,4 +1,4 @@
-FROM atomist/sdm-base:0.0.5
+FROM atomist/sdm-base:0.2.0
 
 RUN npm install --global yarn
 
@@ -13,6 +13,3 @@ RUN npm ci \
     && npm cache clean --force
 
 COPY . .
-
-# Declaring a volume will instruct kaniko to skip the directory when snapshotting
-VOLUME /opt/app
