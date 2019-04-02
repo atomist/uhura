@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 -   Custom ingress for k8s cluster deployments. [#9](https://github.com/atomist/uhura/issues/9)
+-   Query for deployment configuration?. [#19](https://github.com/atomist/uhura/issues/19)
 
 ### Changed
 
