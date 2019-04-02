@@ -20,6 +20,7 @@ import {
     PreferenceScope,
     SdmContext,
     slackErrorMessage,
+    slackInfoMessage,
     slackSuccessMessage,
     slackWarningMessage,
     SoftwareDeliveryMachine,
@@ -114,6 +115,43 @@ Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")
                 slackSuccessMessage(
                     "Configure Deployment",
                     `Successfully configured ${italic(ci.parameters.goal)} deployments for ${codeLine(`${mapping.cluster}:${ci.parameters.ns}`)}`));
+        },
+    };
+}
+
+export function showDeploymentCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration {
+    return {
+        name: "DisplayDeployment",
+        intent: `show deployment ${sdm.configuration.name.replace("@", "")}`,
+        description: "Show deployment configuration to k8s clusters",
+        autoSubmit: true,
+        listener: async ci => {
+            const mapping = await getCustomDeploymentMapping(ci);
+            if (!mapping.production && !mapping.testing) {
+                await ci.context.messageClient.respond(
+                    slackInfoMessage(
+                        "Deployment Configuration",
+                        "No k8s cluster deployment configured"));
+                return;
+            }
+
+            const mappings = [];
+            if (!!mapping.testing) {
+                mappings.push(`${codeLine("testing")} deployments -> ${italic(`${mapping.testing.cluster}:${mapping.testing.ns}`)}`);
+            }
+            if (!!mapping.production) {
+                mappings.push(`${codeLine("production")} deployments -> ${italic(`${mapping.production.cluster}:${mapping.production.ns}`)}`);
+            }
+
+            const msg = slackSuccessMessage(
+                "Deployment Configuration",
+                `The following k8s deployment targets are configured:
+
+${mappings.join("\n")}
+
+Run ${codeLine("configure deployment atomist/uhura")} to change this configuration.`);
+
+            await ci.context.messageClient.respond(msg);
         },
     };
 }
