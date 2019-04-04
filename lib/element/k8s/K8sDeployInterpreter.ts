@@ -111,7 +111,7 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                 if (!app.ingressSpec) {
 
                     const k8sCluster = await ctx.graphClient.query<KubernetesClusterProvider.Query, KubernetesClusterProvider.Variables>({
-                        name: "KubernetesClusterProviderForName",
+                        name: "KubernetesClusterProvider",
                         variables: {
                             name: k8sStack.deploymentMapping[phase].cluster,
                         },
