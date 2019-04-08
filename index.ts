@@ -20,8 +20,10 @@ import {
     Fingerprint,
 } from "@atomist/sdm";
 import {
+    CompressingGoalCache,
     ConfigureOptions,
     configureSdm,
+    FileSystemGoalCacheArchiveStore,
 } from "@atomist/sdm-core";
 import { machineMaker } from "./lib/machine/machine";
 
@@ -34,6 +36,11 @@ export const configuration: Configuration = {
         configureSdm(machineMaker(), machineOptions),
     ],
     sdm: {
+        goalCache: new CompressingGoalCache(new FileSystemGoalCacheArchiveStore()),
+        cache: {
+            enabled: true,
+            path: "/tmp/atomist",
+        },
         goal: {
             optional: [
                 new Fingerprint(),
