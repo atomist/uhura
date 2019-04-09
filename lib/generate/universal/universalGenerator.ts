@@ -21,6 +21,7 @@ import {
 } from "@atomist/automation-client";
 import {
     chainTransforms,
+    CodeTransform,
     CommandListenerInvocation,
     GeneratorRegistration,
     ParametersObject,
@@ -45,6 +46,7 @@ import {
 
 interface Analyzed {
     analysis: ProjectAnalysis;
+    transformsToApply: Array<CodeTransform<any>>;
 }
 
 /**
@@ -77,11 +79,11 @@ export function universalGenerator(projectAnalyzer: ProjectAnalyzer,
         transform: async (p, pi) => {
             try {
                 logger.debug("In transform: parameters are %j", pi.parameters);
-                const analysis = (pi.parameters as any as Analyzed).analysis;
-                await displayMessages(pi, analysis);
-                const transforms = _.flatten(analysis.seedAnalysis.transformRecipes.map(r => r.recipe.transforms));
+                const analyzed = pi.parameters as any as Analyzed;
+                await displayMessages(pi, analyzed.analysis);
+                const transforms = analyzed.transformsToApply;
                 await pi.addressChannels(`Running ${transforms.length} transform${transforms.length !== 1 ? "s" : ""} against your seed project`);
-                await addProvenanceFile(p, pi, _.flatten(analysis.seedAnalysis.transformRecipes));
+                await addProvenanceFile(p, pi, _.flatten(analyzed.analysis.seedAnalysis.transformRecipes));
                 // tslint:disable-next-line:deprecation
                 const trans = chainTransforms(...transforms, SdmEnablementTransform);
                 return trans(p, pi, pi.parameters);
@@ -98,15 +100,43 @@ export function universalGenerator(projectAnalyzer: ProjectAnalyzer,
  */
 async function enhanceWithSpecificParameters<P>(analysis: ProjectAnalysis,
                                                 ctx: CommandListenerInvocation<any>): Promise<void> {
-    const parameters: ParametersObject<any> = {};
-    for (const recipeRequest of analysis.seedAnalysis.transformRecipes) {
+    const requiredTransformRecipes = analysis.seedAnalysis.transformRecipes.filter(r => !r.optional);
+    const optionalTransformRecipes = analysis.seedAnalysis.transformRecipes.filter(r => r.optional);
+
+    // Work out which optional parameters are required
+    const transformsToTake: ParametersObject<any> = {};
+    for (const recipeRequest of optionalTransformRecipes) {
+        transformsToTake[recipeRequest.originator] = {
+            type: {
+                options: [{
+                    value: "yes",
+                    description: "yes",
+                }, {
+                    value: "no",
+                    description: "no",
+                }],
+                kind: "single",
+            },
+            description: `Add ${recipeRequest.description}?`,
+        };
+    }
+    const optionalTransformsParams: any = optionalTransformRecipes.length > 0 ?
+        await ctx.promptFor<P>(transformsToTake) :
+        [];
+    const relevantTransformRecipes = requiredTransformRecipes.concat(
+        optionalTransformRecipes.filter(o => optionalTransformsParams[o.originator] === "yes"),
+    );
+    (ctx.parameters as Analyzed).transformsToApply = _.flatten(relevantTransformRecipes.map(r => r.recipe.transforms));
+
+    const unsatisfiedParameters: ParametersObject<any> = {};
+    for (const recipeRequest of relevantTransformRecipes) {
         recipeRequest.recipe.parameters
             .filter(p => !ctx.parameters[p.name])
             .forEach(p => {
-                (parameters as any)[p.name] = p;
+                unsatisfiedParameters[p.name] = p;
             });
     }
-    const newParams: any = await ctx.promptFor<P>(parameters);
+    const newParams: any = await ctx.promptFor<P>(unsatisfiedParameters);
     for (const name of Object.getOwnPropertyNames(newParams)) {
         ctx.parameters[name] = newParams[name];
     }
