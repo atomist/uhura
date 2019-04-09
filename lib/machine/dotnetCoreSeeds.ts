@@ -19,9 +19,9 @@ import { SelectedRepo } from "../common/SelectedRepoFinder";
 /**
  * Default hard-coded list of seeds.
  */
-export const DefaultSpringSeeds: SelectedRepo[] = [
+export const DefaultDotnetCoreSeeds: SelectedRepo[] = [
     {
-        url: "https://github.com/atomist-seeds/spring-rest-seed",
-        description: "Spring REST Project",
+        url: "https://github.com/atomist-seeds/dotnet-core-service",
+        description: "Simple .NET Core Web Application",
     },
 ];
