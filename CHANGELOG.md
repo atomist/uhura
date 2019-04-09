@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 -   Uses atomist-seeds provided seeds so that dashboard works with uhura. [#16](https://github.com/atomist/uhura/issues/16)
+-   Support optional transform contributors in UniversalGenerator. [#22](https://github.com/atomist/uhura/issues/22)
 
 ### Removed
 
