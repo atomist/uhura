@@ -21,6 +21,8 @@ import {
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
 
+export const DotnetCoreProjectFileGlob = "*.csproj";
+
 export interface DotnetCoreStack extends TechnologyElement {
     name: "dotnetcore";
     target: string;
@@ -39,7 +41,7 @@ export const dotnetCoreGrammar = Microgrammar.fromString<{ target: string }>(
  * TechnologyScanner that scans projects for .NET Core files
  */
 export const dotnetCoreScanner: TechnologyScanner<DotnetCoreStack> = async p => {
-    const csprojFiles = await projectUtils.gatherFromFiles(p, "*.csproj", async f => f);
+    const csprojFiles = await projectUtils.gatherFromFiles(p, DotnetCoreProjectFileGlob, async f => f);
 
     if (!csprojFiles || csprojFiles.length === 0) {
         return undefined;

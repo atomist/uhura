@@ -45,7 +45,10 @@ import {
     spawnBuilder,
 } from "@atomist/sdm-pack-build";
 import { gitBranchToNpmVersion } from "@atomist/sdm-pack-node/lib/build/executePublish";
-import { DotnetCoreStack } from "./dotnetCoreScanner";
+import {
+    DotnetCoreProjectFileGlob,
+    DotnetCoreStack,
+} from "./dotnetCoreScanner";
 
 /**
  * Interpreter that adds Version and Build goal for .NET Core apps
@@ -129,7 +132,7 @@ export const DotnetCoreVersionProjectListener: GoalProjectListenerRegistration =
                 sdmGoal.branch,
                 r.context);
 
-            const csprojFiles = await projectUtils.gatherFromFiles(p, "*.csproj", async f => f);
+            const csprojFiles = await projectUtils.gatherFromFiles(p, DotnetCoreProjectFileGlob, async f => f);
             const csproj = await csprojFiles[0].getContent();
             const oldVersion = await findVersion(p);
 
@@ -156,7 +159,7 @@ const DefaultVersion = "0.0.1";
  * Read version from th .NET Core .csproj files
  */
 async function findVersion(p: Project): Promise<string> {
-    const csprojFiles = await projectUtils.gatherFromFiles(p, "*.csproj", async f => f);
+    const csprojFiles = await projectUtils.gatherFromFiles(p, DotnetCoreProjectFileGlob, async f => f);
 
     if (!csprojFiles || csprojFiles.length === 0) {
         return DefaultVersion;
