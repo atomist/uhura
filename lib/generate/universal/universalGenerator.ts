@@ -20,7 +20,8 @@ import {
     Project,
 } from "@atomist/automation-client";
 import {
-    chainTransforms, CodeTransform,
+    chainTransforms,
+    CodeTransform,
     CommandListenerInvocation,
     GeneratorRegistration,
     ParametersObject,
