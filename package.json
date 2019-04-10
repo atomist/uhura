@@ -30,7 +30,7 @@
     "@atomist/microgrammar": "^1.2.0",
     "@atomist/sdm": "^1.3.1",
     "@atomist/sdm-core": "^1.3.1",
-    "@atomist/sdm-pack-analysis": "1.0.1-message-phase.20190410094737",
+    "@atomist/sdm-pack-analysis": "1.1.0-master.20190410103215",
     "@atomist/sdm-pack-analysis-node": "^1.0.0",
     "@atomist/sdm-pack-analysis-spring": "^1.0.1",
     "@atomist/sdm-pack-build": "^1.0.4",
