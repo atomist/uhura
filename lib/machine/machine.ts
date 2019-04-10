@@ -40,13 +40,14 @@ import {
     containerGoals,
     controlGoals,
     deployGoals,
+    DismissMessageCommand,
     Interpretation,
     materialChange,
+    messagingGoals,
     ProjectAnalyzer,
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
-import { messagingGoals } from "@atomist/sdm-pack-analysis/lib/analysis/Interpretation";
 import {
     issueSupport,
     singleIssuePerCategoryManaging,
@@ -175,6 +176,11 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 return { interpretation };
             }),
 
+            // If we have messages to send, always send them
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+                .itMeans("messages")
+                .setGoalsWhen(pu => messagingGoals(pu.facts.interpretation, analyzer)),
+
             // If the change isn't important, don't do anything
             whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(materialChange)
                 .itMeans("immaterial change")
@@ -184,9 +190,6 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("control")
                 .setGoalsWhen(pu => controlGoals(pu.facts.interpretation)),
-            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
-                .itMeans("send messages")
-                .setGoalsWhen(pu => messagingGoals(pu.facts.interpretation)),
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("checks")
                 .setGoalsWhen(pu => checkGoals(pu.facts.interpretation, analyzer)),
@@ -220,6 +223,8 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         sdm.addCommand(addSeed(analyzer));
         sdm.addCommand(removeSeed());
         sdm.addCommand(listSeeds(analyzer));
+
+        sdm.addCommand(DismissMessageCommand);
 
         // Universal generator, which requires dynamic parameters
         // Support Spring as well as Node out of the box
