@@ -40,7 +40,6 @@ import {
     containerGoals,
     controlGoals,
     deployGoals,
-    DismissMessageCommand,
     Interpretation,
     materialChange,
     messagingGoals,
@@ -223,8 +222,6 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         sdm.addCommand(addSeed(analyzer));
         sdm.addCommand(removeSeed());
         sdm.addCommand(listSeeds(analyzer));
-
-        sdm.addCommand(DismissMessageCommand);
 
         // Universal generator, which requires dynamic parameters
         // Support Spring as well as Node out of the box
