@@ -91,6 +91,7 @@ import { IsSdmEnabled } from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
+import { messagingGoals } from "@atomist/sdm-pack-analysis/lib/analysis/Interpretation";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
@@ -182,6 +183,9 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("control")
                 .setGoalsWhen(pu => controlGoals(pu.facts.interpretation)),
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+                .itMeans("send messages")
+                .setGoalsWhen(pu => messagingGoals(pu.facts.interpretation)),
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("checks")
                 .setGoalsWhen(pu => checkGoals(pu.facts.interpretation, analyzer)),
