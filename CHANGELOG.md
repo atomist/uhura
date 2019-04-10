@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Custom ingress for k8s cluster deployments. [#9](https://github.com/atomist/uhura/issues/9)
 -   Query for deployment configuration?. [#19](https://github.com/atomist/uhura/issues/19)
 -   Add support for .NET Core. [#25](https://github.com/atomist/uhura/issues/25)
+-   Add support for sending messages from a Project Analysis. [#27](https://github.com/atomist/uhura/issues/27)
 
 ### Changed
 
