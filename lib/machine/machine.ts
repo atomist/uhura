@@ -40,8 +40,10 @@ import {
     containerGoals,
     controlGoals,
     deployGoals,
+    DismissMessageCommand,
     Interpretation,
     materialChange,
+    messagingGoals,
     ProjectAnalyzer,
     releaseGoals,
     testGoals,
@@ -174,6 +176,11 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 return { interpretation };
             }),
 
+            // If we have messages to send, always send them
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+                .itMeans("messages")
+                .setGoalsWhen(pu => messagingGoals(pu.facts.interpretation, analyzer)),
+
             // If the change isn't important, don't do anything
             whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(materialChange)
                 .itMeans("immaterial change")
@@ -216,6 +223,8 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         sdm.addCommand(addSeed(analyzer));
         sdm.addCommand(removeSeed());
         sdm.addCommand(listSeeds(analyzer));
+
+        sdm.addCommand(DismissMessageCommand);
 
         // Universal generator, which requires dynamic parameters
         // Support Spring as well as Node out of the box

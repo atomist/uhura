@@ -35,6 +35,7 @@ import {
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
 import { ApplicationDataCallback } from "@atomist/sdm-pack-k8s/lib/deploy/goal";
+import * as slack from "@atomist/slack-messages";
 import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
 import { DeepPartial } from "ts-essentials";
@@ -70,6 +71,11 @@ export class K8sDeployInterpreter implements Interpreter {
     public async enrich(interpretation: Interpretation): Promise<boolean> {
         const k8sStack = interpretation.reason.analysis.elements.k8s as K8sStack;
         if (!k8sStack) {
+            interpretation.messages.push({
+                message: `Atomist Uhura allows you to deploy your applications into your own Kubernetes clusters.
+
+To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
+            });
             return false;
         }
 
