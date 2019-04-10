@@ -46,6 +46,7 @@ import {
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
+import { messagingGoals } from "@atomist/sdm-pack-analysis/lib/analysis/Interpretation";
 import {
     issueSupport,
     singleIssuePerCategoryManaging,
@@ -92,7 +93,6 @@ import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
-import { messagingGoals } from "@atomist/sdm-pack-analysis/lib/analysis/Interpretation";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
