@@ -58,13 +58,14 @@ export class DockerBuildInterpreter implements Interpreter {
             return false;
         }
 
-        interpretation.containerBuildGoals = goals("docker build").plan(this.dockerBuildGoal);
-
-        interpretation.materialChangePushTests.push(isMaterialChange({
-            files: ["Dockerfile"],
-        }));
-
-        return true;
+        if (!interpretation.containerBuildGoals) {
+            interpretation.containerBuildGoals = goals("docker build").plan(this.dockerBuildGoal);
+            interpretation.materialChangePushTests.push(isMaterialChange({
+                files: ["Dockerfile"],
+            }));
+            return true;
+        }
+        return false;
     }
 }
 
