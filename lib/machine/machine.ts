@@ -93,7 +93,10 @@ import {
     enableGoalCommand,
     enableOrgCommand,
 } from "../preference/enablement";
-import { IsSdmDisabled, IsSdmEnabled } from "../preference/pushTests";
+import {
+    IsSdmDisabled,
+    IsSdmEnabled,
+} from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
