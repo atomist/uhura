@@ -15,28 +15,50 @@
  */
 
 import { projectUtils } from "@atomist/automation-client";
+import { SdmContext } from "@atomist/sdm";
 import {
+    FastProject,
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import {
+    PhasedTechnologyScanner,
+    TechnologyClassification,
+} from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 
 export interface DockerStack extends TechnologyElement {
     name: "docker";
 }
 
-export const dockerScanner: TechnologyScanner<DockerStack> = async p => {
-    let dockerfile: string;
-    await projectUtils.doWithFiles(p, "**/Dockerfile", f => {
-        dockerfile = f.path;
-    });
+export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
 
-    if (!dockerfile) {
+    public async classify(p: FastProject, ctx: SdmContext): Promise<TechnologyClassification | undefined> {
+        if (!await p.hasFile("Dockerfile")) {
+            return {
+                name: "docker",
+                tags: ["docker"],
+                messages: [{ message: "Adding a Dockerfile to this project will trigger a Docker container build." }],
+            };
+        }
         return undefined;
     }
 
-    const stack: DockerStack = {
-        tags: ["docker"],
-        name: "docker",
-    };
-    return stack;
-};
+    get scan(): TechnologyScanner<DockerStack> {
+        return async p => {
+            let dockerfile: string;
+            await projectUtils.doWithFiles(p, "**/Dockerfile", f => {
+                dockerfile = f.path;
+            });
+
+            if (!dockerfile) {
+                return undefined;
+            }
+
+            const stack: DockerStack = {
+                tags: ["docker"],
+                name: "docker",
+            };
+            return stack;
+        };
+    }
+}
