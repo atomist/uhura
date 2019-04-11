@@ -20,12 +20,14 @@ import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import { HasDockerfile } from "@atomist/sdm-pack-docker";
 
 export const DotnetCoreProjectFileGlob = "*.csproj";
 
 export interface DotnetCoreStack extends TechnologyElement {
     name: "dotnetcore";
     target: string;
+    hasDockerFile: boolean;
 }
 
 /**
@@ -61,6 +63,7 @@ export const dotnetCoreScanner: TechnologyScanner<DotnetCoreStack> = async p => 
         const stack: DotnetCoreStack = {
             tags: ["dotnetcore"],
             name: "dotnetcore",
+            hasDockerFile: await HasDockerfile.predicate(p),
             target: targetMatch.target,
         };
 
