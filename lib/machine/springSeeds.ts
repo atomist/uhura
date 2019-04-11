@@ -108,7 +108,6 @@ export const DefaultSpringSeeds: SelectedRepo[] = [
     {
         url: "https://github.com/atomist-seeds/spring-rest-seed",
         description: "Spring REST Project",
-
         transform: SpringRestProjectApiCodeTransform,
     },
 ];

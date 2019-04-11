@@ -33,7 +33,7 @@ import {
     SoftwareDeliveryMachineMaker,
 } from "@atomist/sdm-core";
 import {
-    analysis,
+    analysisSupport,
     assessInspection,
     buildGoals,
     checkGoals,
@@ -42,6 +42,7 @@ import {
     deployGoals,
     Interpretation,
     materialChange,
+    messagingGoals,
     ProjectAnalyzer,
     releaseGoals,
     testGoals,
@@ -89,6 +90,7 @@ import {
 } from "../preference/enablement";
 import { IsSdmEnabled } from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
+import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
 
@@ -173,6 +175,11 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 return { interpretation };
             }),
 
+            // If we have messages to send, always send them
+            onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
+                .itMeans("messages")
+                .setGoalsWhen(pu => messagingGoals(pu.facts.interpretation, analyzer)),
+
             // If the change isn't important, don't do anything
             whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(materialChange)
                 .itMeans("immaterial change")
@@ -231,7 +238,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             description: "Create a project from a curated list of seed repos",
             intent: `discover all ${sdm.configuration.name.replace("@", "")}`,
             seedParameter: dropDownSeedUrlParameterDefinition(
-                ...optsToUse.globalSeeds, ...DefaultSpringSeeds),
+                ...optsToUse.globalSeeds, ...DefaultSpringSeeds, ...DefaultDotnetCoreSeeds),
         }));
 
         // Create Node from a free text input
@@ -280,7 +287,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Extension Pack registrations
         sdm.addExtensionPacks(
-            analysis(),
+            analysisSupport(),
             gitHubGoalStatus(),
             goalState(),
             k8sSupport(),

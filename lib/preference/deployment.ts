@@ -79,7 +79,7 @@ export function configureDeploymentCommand(sdm: SoftwareDeliveryMachine): Comman
                         "Configure Deployment",
                         `No Kubernetes clusters have been registered with this workspace.
 
-Please follow ${url("https://docs.atomist.com/pack/kubernetes/", "instructions")} to configure a Kubernetes cluster.`,
+Please follow ${url("https://docs.atomist.com/getting-started/", "instructions")} to configure a Kubernetes cluster.`,
                         ci.context));
                 return;
             } else {
