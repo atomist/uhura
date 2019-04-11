@@ -45,8 +45,8 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 | Name | Version | Publisher | Repository |
 |------|---------|-----------|------------|
 |`@atomist/sdm-core`|`1.5.0-master.20190409155650`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
-|`@atomist/sdm-pack-analysis-node`|`2.0.0-master.20190409220318`|Atomist|[https://github.com/atomist/sdm-pack-analysis-node](https://github.com/atomist/sdm-pack-analysis-node)|
-|`@atomist/sdm-pack-analysis-spring`|`2.0.0-master.20190409155906`|Atomist|[https://github.com/atomist/sdm-pack-analysis-spring](https://github.com/atomist/sdm-pack-analysis-spring)|
+|`@atomist/sdm-pack-analysis-node`|`2.0.0-master.20190411092050`|Atomist|[https://github.com/atomist/sdm-pack-analysis-node](https://github.com/atomist/sdm-pack-analysis-node)|
+|`@atomist/sdm-pack-analysis-spring`|`2.0.0-master.20190411092032`|Atomist|[https://github.com/atomist/sdm-pack-analysis-spring](https://github.com/atomist/sdm-pack-analysis-spring)|
 |`@atomist/sdm-pack-analysis`|`1.1.0-master.20190411080306`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
 |`@atomist/sdm-pack-build`|`1.0.4`|Atomist|[https://github.com/atomist/sdm-pack-build](https://github.com/atomist/sdm-pack-build)|
 |`@atomist/sdm-pack-docker`|`1.2.0`|Atomist|[https://github.com/atomist/sdm-pack-docker](https://github.com/atomist/sdm-pack-docker)|
