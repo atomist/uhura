@@ -47,6 +47,11 @@ import {
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
+import { Classification } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalyzer";
+import {
+    allMessages,
+    allTechnologyClassifications,
+} from "@atomist/sdm-pack-analysis/lib/analysis/support/projectAnalysisUtils";
 import {
     issueSupport,
     singleIssuePerCategoryManaging,
@@ -93,11 +98,6 @@ import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
-import { Classification } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalyzer";
-import {
-    allMessages,
-    allTechnologyClassifications,
-} from "@atomist/sdm-pack-analysis/lib/analysis/support/projectAnalysisUtils";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
