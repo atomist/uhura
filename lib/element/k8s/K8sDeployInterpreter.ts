@@ -71,11 +71,6 @@ export class K8sDeployInterpreter implements Interpreter {
     public async enrich(interpretation: Interpretation): Promise<boolean> {
         const k8sStack = interpretation.reason.analysis.elements.k8s as K8sStack;
         if (!k8sStack) {
-            interpretation.messages.push({
-                message: `Atomist Uhura allows you to deploy your applications into your own Kubernetes clusters.
-
-To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
-            });
             return false;
         }
 
@@ -89,6 +84,12 @@ To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/ge
 
             interpretation.deployGoals = deployGoals;
             return true;
+        } else {
+            interpretation.messages.push({
+                message: `Atomist Uhura allows you to deploy your applications into your own Kubernetes clusters.
+
+To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
+            });
         }
         return false;
     }
