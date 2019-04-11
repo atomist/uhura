@@ -156,11 +156,6 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         const analyzer = optsToUse.analyzerFactory(sdm);
 
-        analyzer.autofixGoal.withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
-        analyzer.codeInspectionGoal
-            .withListener(singleIssuePerCategoryManaging(configuration.name, true, () => true))
-            .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
-
         interface Interpreted {
             interpretation: Interpretation;
         }
