@@ -33,7 +33,7 @@ import {
     SoftwareDeliveryMachineMaker,
 } from "@atomist/sdm-core";
 import {
-    analysis,
+    analysisSupport,
     assessInspection,
     buildGoals,
     checkGoals,
@@ -287,7 +287,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Extension Pack registrations
         sdm.addExtensionPacks(
-            analysis(),
+            analysisSupport(),
             gitHubGoalStatus(),
             goalState(),
             k8sSupport(),
