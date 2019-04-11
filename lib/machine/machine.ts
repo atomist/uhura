@@ -88,11 +88,16 @@ import {
     enableGoalCommand,
     enableOrgCommand,
 } from "../preference/enablement";
-import { IsSdmEnabled } from "../preference/pushTests";
+import { IsSdmDisabled, IsSdmEnabled } from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
+import { Classification } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalyzer";
+import {
+    allMessages,
+    allTechnologyClassifications,
+} from "@atomist/sdm-pack-analysis/lib/analysis/support/projectAnalysisUtils";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
@@ -162,7 +167,21 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
-            whenPushSatisfies(not(IsSdmEnabled)).setGoals(DoNotSetAnyGoalsAndLock),
+            whenPushSatisfies(IsSdmDisabled).setGoals(DoNotSetAnyGoalsAndLock),
+
+            // It's not explicitly enabled: Let's see if we know how to do it
+            whenPushSatisfies(not(IsSdmEnabled))
+                .setGoalsWhen(async pu => {
+                    const classification = await analyzer.classify(pu.project, pu);
+                    const classifications = allTechnologyClassifications(classification);
+                    const messages = allMessages(classification);
+                    // TODO add button for enable SDM
+                    // TODO should we rerun on the push?
+                    messages.push({ message: "Atomist could help you deliver this repo. Would you like to see how?" });
+                    return classifications.length > 0 ?
+                        messagingGoals({ messages }, analyzer).andLock() :
+                        DoNotSetAnyGoalsAndLock;
+                }),
 
             // Compute the Interpretation and attach it to the current push invocation
             attachFacts<Interpreted>(async pu => {
