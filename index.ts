@@ -38,7 +38,7 @@ export const configuration: Configuration = {
     sdm: {
         goalCache: new CompressingGoalCache(new FileSystemGoalCacheArchiveStore()),
         cache: {
-            enabled: true,
+            enabled: false,
             path: "/tmp/atomist",
         },
         goal: {

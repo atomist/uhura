@@ -130,7 +130,7 @@ export interface UhuraOptions {
 const defaultUhuraOptions: UhuraOptions = {
     name: "Atomist Uhura",
     analyzerFactory: defaultAnalyzerFactory,
-    globalSeeds: DefaultNodeSeeds,
+    globalSeeds: [...DefaultNodeSeeds, ...DefaultSpringSeeds],
     extendedGoals: AnyPush,
 };
 
