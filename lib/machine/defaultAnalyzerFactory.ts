@@ -25,7 +25,9 @@ import {
     javaStackSupport,
     springBootStackSupport,
 } from "@atomist/sdm-pack-analysis-spring";
-import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
+import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
+import { CodeInspectionInterpreter } from "../element/common/codeInspectionInterpreter";
+import { DockerfileInterpreter } from "../element/docker/DockerfileInterpreter";
 import { dockerScanner } from "../element/docker/dockerScanner";
 import { dotnetCoreStack } from "../element/dotnet/dotnetCoreStack";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
@@ -41,20 +43,22 @@ import { AnalyzerFactory } from "./machine";
  * @param {SoftwareDeliveryMachine} sdm
  * @return {ProjectAnalyzer}
  */
-export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
-    analyzerBuilder(sdm)
+export const defaultAnalyzerFactory: AnalyzerFactory = sdm => {
+    return analyzerBuilder(sdm)
         .withStack(nodeStackSupport({
             configureTestGoal: g => g.withService(Mongo),
         }))
         .withStack(javaStackSupport())
         .withStack(springBootStackSupport(sdm.configuration))
         .withStack(dotnetCoreStack(sdm.configuration))
-        .withScanner(dockerScanner)
+
         .withScanner(k8sScanner)
         .withScanner(travisScanner)
         .withScanner(preferencesScanner)
         .withInterpreter(new EmulateTravisBuildInterpreter())
         .withInterpreter(new K8sDeployInterpreter())
+        .withInterpreter(new CodeInspectionInterpreter(singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true)))
+
         // Add support for generic seeds...
         .withTransformRecipeContributor({
             contributor: new PlaceholderTransformRecipeContributor(),
@@ -67,3 +71,4 @@ export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
             originator: "default-snip",
         })
         .build();
+};

@@ -47,15 +47,8 @@ import {
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
-import {
-    issueSupport,
-    singleIssuePerCategoryManaging,
-} from "@atomist/sdm-pack-issue";
+import { issueSupport } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
-import {
-    CacheScope,
-    npmInstallProjectListener,
-} from "@atomist/sdm-pack-node";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
@@ -155,11 +148,6 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         });
 
         const analyzer = optsToUse.analyzerFactory(sdm);
-
-        analyzer.autofixGoal.withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
-        analyzer.codeInspectionGoal
-            .withListener(singleIssuePerCategoryManaging(configuration.name, true, () => true))
-            .withProjectListener(npmInstallProjectListener({ scope: CacheScope.Repository }));
 
         interface Interpreted {
             interpretation: Interpretation;
