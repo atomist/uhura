@@ -93,7 +93,7 @@ export class K8sDeployInterpreter implements Interpreter {
 To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
             });
         }
-        
+
         return false;
     }
 }
