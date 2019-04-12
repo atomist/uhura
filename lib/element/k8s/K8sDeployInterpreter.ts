@@ -84,13 +84,16 @@ export class K8sDeployInterpreter implements Interpreter {
 
             interpretation.deployGoals = deployGoals;
             return true;
-        } else {
+        }
+
+        if (!k8sStack.deploymentMapping || (!k8sStack.deploymentMapping.testing && !k8sStack.deploymentMapping.production)) {
             interpretation.messages.push({
                 message: `Atomist Uhura allows you to deploy your applications into your own Kubernetes clusters.
 
 To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
             });
         }
+        
         return false;
     }
 }
