@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { projectUtils } from "@atomist/automation-client";
+import {
+    Project,
+    projectUtils
+} from "@atomist/automation-client";
 import { microgrammar } from "@atomist/microgrammar";
 import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
-import { HasDockerfile } from "@atomist/sdm-pack-docker";
 
 export const DotnetCoreProjectFileGlob = "*.csproj";
 
@@ -40,6 +42,14 @@ export const dotnetCoreGrammar = microgrammar<{ target: string }>({
         target: /[a-zA-Z_\.0-9\-]+/,
     },
 });
+
+export async function getDockerFile(p: Project): Promise<string> {
+    let dockerfile: string;
+    await projectUtils.doWithFiles(p, "**/Dockerfile", async f => {
+        dockerfile = f.path;
+    });
+    return dockerfile;
+}
 
 /**
  * TechnologyScanner that scans projects for .NET Core files
@@ -63,7 +73,7 @@ export const dotnetCoreScanner: TechnologyScanner<DotnetCoreStack> = async p => 
         const stack: DotnetCoreStack = {
             tags: ["dotnetcore"],
             name: "dotnetcore",
-            hasDockerFile: await HasDockerfile.predicate(p),
+            hasDockerFile: !!(await getDockerFile(p)),
             target: targetMatch.target,
         };
 

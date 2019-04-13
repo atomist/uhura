@@ -15,6 +15,7 @@
  */
 
 import { SelectedRepo } from "../common/SelectedRepoFinder";
+
 /**
  * Default hard-coded list of seeds.
  */

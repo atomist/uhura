@@ -96,7 +96,7 @@ export class DotnetCoreInterpreter implements Interpreter {
             .plan(this.buildGoal).after(this.versionGoal);
 
         if (dotnetCoreStack.hasDockerFile) {
-            interpretation.containerBuildGoals = goals("docker-build").plan(this.dockerBuildGoal);
+            interpretation.containerBuildGoals = goals("docker build").plan(this.dockerBuildGoal);
         }
 
         interpretation.materialChangePushTests.push(isMaterialChange({
