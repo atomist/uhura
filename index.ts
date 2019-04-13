@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { Configuration } from "@atomist/automation-client";
 import {
     AutoCodeInspection,
+    CachingProjectLoader,
     Fingerprint,
+    GitHubLazyProjectLoader,
+    SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import {
     ConfigureOptions,
@@ -29,11 +31,12 @@ const machineOptions: ConfigureOptions = {
     requiredConfigurationValues: [],
 };
 
-export const configuration: Configuration = {
+export const configuration: SoftwareDeliveryMachineConfiguration = {
     postProcessors: [
         configureSdm(machineMaker(), machineOptions),
     ],
     sdm: {
+        projectLoader: new GitHubLazyProjectLoader(new CachingProjectLoader()),
         goal: {
             optional: [
                 new Fingerprint(),
