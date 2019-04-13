@@ -184,8 +184,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 messages.push({ message: "Atomist could help you deliver this repo. Would you like to see how?" });
                 return messages;
             });
-
-        }));
+        })).andLock();
 
         // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
@@ -197,7 +196,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                     const classification = await analyzer.classify(pu.project, pu);
                     const classifications = allTechnologyClassifications(classification);
                     return classifications.length > 0 ?
-                        classificationMessageGoal.andLock() :
+                        classificationMessageGoal :
                         DoNotSetAnyGoalsAndLock;
                 }),
 

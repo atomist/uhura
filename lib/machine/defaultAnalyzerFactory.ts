@@ -23,7 +23,7 @@ import {
 import { nodeStackSupport } from "@atomist/sdm-pack-analysis-node";
 import { springBootStackSupport } from "@atomist/sdm-pack-analysis-spring";
 import { DockerBuildInterpreter } from "../element/docker/DockerBuildInterpreter";
-import { dockerScanner } from "../element/docker/dockerScanner";
+import { DockerScanner } from "../element/docker/dockerScanner";
 import { dotnetCoreStack } from "../element/dotnet/dotnetCoreStack";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
 import { k8sScanner } from "../element/k8s/k8sScanner";
@@ -46,7 +46,7 @@ export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
         .withStack(springBootStackSupport(sdm.configuration, {
         }))
         .withStack(dotnetCoreStack(sdm.configuration))
-        .withScanner(dockerScanner)
+        .withScanner(new DockerScanner())
         .withScanner(k8sScanner)
         .withScanner(travisScanner)
         .withScanner(preferencesScanner)
