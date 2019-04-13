@@ -48,6 +48,7 @@ import {
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
+import { messageGoal } from "@atomist/sdm-pack-analysis/lib/analysis/support/messageGoal";
 import {
     allMessages,
     allTechnologyClassifications,
@@ -101,7 +102,6 @@ import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
-import { messageGoal } from "@atomist/sdm-pack-analysis/lib/analysis/support/messageGoal";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
