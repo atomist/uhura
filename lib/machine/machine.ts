@@ -18,6 +18,7 @@ import {
     AnyPush,
     attachFacts,
     DoNotSetAnyGoalsAndLock,
+    goals,
     ImmaterialGoals,
     not,
     onAnyPush,
@@ -47,7 +48,6 @@ import {
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
-import { Classification } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalyzer";
 import {
     allMessages,
     allTechnologyClassifications,
@@ -101,6 +101,7 @@ import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
 import { DefaultSpringSeeds } from "./springSeeds";
+import { messageGoal } from "@atomist/sdm-pack-analysis/lib/analysis/support/messageGoal";
 
 /**
  * Type for creating analyzers. Provide an AnalyzerFactory to customize
@@ -173,6 +174,19 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             interpretation: Interpretation;
         }
 
+        // TODO move this to a better place in analysis pack
+        const classificationMessageGoal = goals("messages").plan(messageGoal(async gi => {
+            return gi.configuration.sdm.projectLoader.doWithProject({ ...gi, readOnly: true }, async p => {
+                const classification = await analyzer.classify(p, gi);
+                const messages = allMessages(classification);
+                // TODO add button for enable SDM
+                // TODO should we rerun on the push?
+                messages.push({ message: "Atomist could help you deliver this repo. Would you like to see how?" });
+                return messages;
+            });
+
+        }));
+
         // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
             whenPushSatisfies(IsSdmDisabled).setGoals(DoNotSetAnyGoalsAndLock),
@@ -182,12 +196,8 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 .setGoalsWhen(async pu => {
                     const classification = await analyzer.classify(pu.project, pu);
                     const classifications = allTechnologyClassifications(classification);
-                    const messages = allMessages(classification);
-                    // TODO add button for enable SDM
-                    // TODO should we rerun on the push?
-                    messages.push({ message: "Atomist could help you deliver this repo. Would you like to see how?" });
                     return classifications.length > 0 ?
-                        messagingGoals({ messages }, analyzer).andLock() :
+                        classificationMessageGoal.andLock() :
                         DoNotSetAnyGoalsAndLock;
                 }),
 
