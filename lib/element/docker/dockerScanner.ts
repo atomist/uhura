@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { projectUtils } from "@atomist/automation-client";
+import {
+    Project,
+    projectUtils
+} from "@atomist/automation-client";
 import {
     TechnologyElement,
     TechnologyScanner,
@@ -25,10 +28,7 @@ export interface DockerStack extends TechnologyElement {
 }
 
 export const dockerScanner: TechnologyScanner<DockerStack> = async p => {
-    let dockerfile: string;
-    await projectUtils.doWithFiles(p, "**/Dockerfile", f => {
-        dockerfile = f.path;
-    });
+    const dockerfile = await getDockerFile(p);
 
     if (!dockerfile) {
         return undefined;
@@ -40,3 +40,11 @@ export const dockerScanner: TechnologyScanner<DockerStack> = async p => {
     };
     return stack;
 };
+
+export async function getDockerFile(p: Project): Promise<string> {
+    let dockerfile: string;
+    await projectUtils.doWithFiles(p, "**/Dockerfile", async f => {
+        dockerfile = f.path;
+    });
+    return dockerfile;
+}

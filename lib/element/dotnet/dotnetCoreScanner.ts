@@ -15,7 +15,6 @@
  */
 
 import {
-    Project,
     projectUtils,
 } from "@atomist/automation-client";
 import { microgrammar } from "@atomist/microgrammar";
@@ -23,6 +22,7 @@ import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import { getDockerFile } from "../docker/dockerScanner";
 
 export const DotnetCoreProjectFileGlob = "*.csproj";
 
@@ -42,14 +42,6 @@ export const dotnetCoreGrammar = microgrammar<{ target: string }>({
         target: /[a-zA-Z_\.0-9\-]+/,
     },
 });
-
-export async function getDockerFile(p: Project): Promise<string> {
-    let dockerfile: string;
-    await projectUtils.doWithFiles(p, "**/Dockerfile", async f => {
-        dockerfile = f.path;
-    });
-    return dockerfile;
-}
 
 /**
  * TechnologyScanner that scans projects for .NET Core files
