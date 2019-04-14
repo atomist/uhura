@@ -16,7 +16,7 @@
 
 import {
     Project,
-    projectUtils
+    projectUtils,
 } from "@atomist/automation-client";
 import {
     TechnologyElement,
