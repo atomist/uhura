@@ -43,7 +43,7 @@ export const IsSdmEnabled: PushTest = pushTest(
  * @type {PushTest}
  */
 export const IsSdmDisabled: PushTest = pushTest(
-    "isSdmEnabled",
+    "isSdmDisabled",
     async p => {
         const orgDisabled = await p.preferences.get<boolean>(
             `${p.id.owner}:disabled`,
