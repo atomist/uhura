@@ -30,8 +30,9 @@ import {
 } from "@atomist/sdm";
 import {
     createSoftwareDeliveryMachine,
-    gitHubGoalStatus,
-    goalState,
+    githubGoalStatusSupport,
+    goalStateSupport,
+    notificationSupport,
     SoftwareDeliveryMachineMaker,
 } from "@atomist/sdm-core";
 import {
@@ -323,9 +324,10 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Extension Pack registrations
         sdm.addExtensionPacks(
+            notificationSupport(),
             analysisSupport(),
-            gitHubGoalStatus(),
-            goalState(),
+            githubGoalStatusSupport(),
+            goalStateSupport(),
             k8sSupport(),
             issueSupport({
                 labelIssuesOnDeployment: true,
