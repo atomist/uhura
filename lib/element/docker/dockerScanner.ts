@@ -37,7 +37,7 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
             return {
                 name: "docker",
                 tags: ["docker"],
-                messages: [{ message: "This project should really have a Dockerfile" }],
+                messages: [{ message: "Adding a Dockerfile to this project will trigger a Docker container build" }],
             };
         }
         return undefined;
