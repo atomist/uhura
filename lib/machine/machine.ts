@@ -55,15 +55,8 @@ import {
     allMessages,
     allTechnologyClassifications,
 } from "@atomist/sdm-pack-analysis/lib/analysis/support/projectAnalysisUtils";
-import {
-    issueSupport,
-    singleIssuePerCategoryManaging,
-} from "@atomist/sdm-pack-issue";
+import { issueSupport } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
-import {
-    CacheScope,
-    npmInstallProjectListener,
-} from "@atomist/sdm-pack-node";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
