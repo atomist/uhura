@@ -43,8 +43,7 @@ export const defaultAnalyzerFactory: AnalyzerFactory = sdm =>
         .withStack(nodeStackSupport({
             configureTestGoal: g => g.withService(Mongo),
         }))
-        .withStack(springBootStackSupport(sdm.configuration, {
-        }))
+        .withStack(springBootStackSupport(sdm.configuration))
         .withStack(dotnetCoreStack(sdm.configuration))
         .withScanner(new DockerScanner())
         .withScanner(k8sScanner)

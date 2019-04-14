@@ -15,6 +15,7 @@
  */
 
 import {
+    actionableButton,
     AnyPush,
     attachFacts,
     DoNotSetAnyGoalsAndLock,
@@ -178,10 +179,19 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         const classificationMessageGoal = goals("messages").plan(messageGoal(async gi => {
             return gi.configuration.sdm.projectLoader.doWithProject({ ...gi, readOnly: true }, async p => {
                 const classification = await analyzer.classify(p, gi);
-                const messages = allMessages(classification);
-                // TODO add button for enable SDM
-                // TODO should we rerun on the push?
-                messages.push({ message: "Atomist could help you deliver this repo. Would you like to see how?" });
+                const messages = [{
+                    message:
+                        {
+                            text: "Atomist could help you deliver this project. Would you like to see how?",
+                            fallback: "Atomist could help you deliver this project. Would you like to see how?",
+                            actions: [actionableButton<{ owner: string, repo: string }>(
+                                { text: "Enable Uhura" },
+                                enableCommand(sdm), {
+                                    owner: gi.goalEvent.repo.owner,
+                                    repo: gi.goalEvent.repo.name,
+                                })],
+                        },
+                }, ...allMessages(classification)];
                 return messages;
             });
         })).andLock();
