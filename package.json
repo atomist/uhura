@@ -28,8 +28,8 @@
   "dependencies": {
     "@atomist/automation-client": "^1.3.0",
     "@atomist/microgrammar": "^1.2.0",
-    "@atomist/sdm": "1.5.0-master.20190411091959",
-    "@atomist/sdm-core": "1.5.0-master.20190414090818",
+    "@atomist/sdm": "^1.5.0-master.20190414092206",
+    "@atomist/sdm-core": "^1.5.0-master.20190413065537",
     "@atomist/sdm-pack-analysis": "1.1.0-master.20190414064804",
     "@atomist/sdm-pack-analysis-node": "2.0.0-master.20190414071618",
     "@atomist/sdm-pack-analysis-spring": "2.0.0-master.20190414070107",
