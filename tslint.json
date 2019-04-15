@@ -2,9 +2,6 @@
   "defaultSeverity": "error",
   "extends": [],
   "jsRules": {},
-  "linterOptions": {
-    "exclude": ["lib/typings/types.ts"]
-  },
   "rules": {
     "adjacent-overload-signatures": true,
     "align": {
