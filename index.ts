@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
 import {
     AutoCodeInspection,
     CachingProjectLoader,
@@ -33,6 +34,7 @@ const machineOptions: ConfigureOptions = {
 
 export const configuration: SoftwareDeliveryMachineConfiguration = {
     postProcessors: [
+        configureDashboardNotifications,
         configureSdm(machineMaker(), machineOptions),
     ],
     sdm: {
