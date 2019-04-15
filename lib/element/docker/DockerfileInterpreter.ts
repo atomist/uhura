@@ -19,17 +19,10 @@ import {
     Interpretation,
     Interpreter,
 } from "@atomist/sdm-pack-analysis";
-import { DockerStack } from "./dockerScanner";
 
 export class DockerfileInterpreter implements Interpreter {
 
     public async enrich(interpretation: Interpretation): Promise<boolean> {
-
-        const dockerStack = interpretation.reason.analysis.elements.docker as DockerStack;
-        if (!dockerStack) {
-            return false;
-        }
-
         interpretation.materialChangePushTests.push(isMaterialChange({
             files: ["Dockerfile"],
         }));

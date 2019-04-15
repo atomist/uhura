@@ -36,28 +36,31 @@ import {
     SoftwareDeliveryMachineMaker,
 } from "@atomist/sdm-core";
 import {
+    allMessages,
+    allTechnologyClassifications,
     analysisSupport,
     assessInspection,
     buildGoals,
     checkGoals,
+    Classification,
     containerGoals,
     controlGoals,
     deployGoals,
     Interpretation,
     materialChange,
+    messageGoal,
     messagingGoals,
     ProjectAnalyzer,
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
-import { Classification } from "@atomist/sdm-pack-analysis/lib/analysis/ProjectAnalyzer";
-import { messageGoal } from "@atomist/sdm-pack-analysis/lib/analysis/support/messageGoal";
-import {
-    allMessages,
-    allTechnologyClassifications,
-} from "@atomist/sdm-pack-analysis/lib/analysis/support/projectAnalysisUtils";
+import { PackageScriptCodeTransform } from "@atomist/sdm-pack-analysis-node/lib/transform/scriptTransform";
 import { issueSupport } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
+import {
+    bold,
+    italic,
+} from "@atomist/slack-messages";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
@@ -170,14 +173,24 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         const classificationMessageGoal = goals("messages").plan(messageGoal(async gi => {
             return gi.configuration.sdm.projectLoader.doWithProject({ ...gi, readOnly: true }, async p => {
                 const classification = await analyzer.classify(p, gi);
+                const classifications = allTechnologyClassifications(classification);
+                const slug = bold(`${gi.goalEvent.repo.owner}/${gi.goalEvent.repo.name}`);
+                const stacks = classifications.map(c => c.name);
+
                 const messages = [{
                     message:
                         {
-                            text: "Atomist could help you deliver this project. Would you like to see how?",
-                            fallback: "Atomist could help you deliver this project. Would you like to see how?",
+                            text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
+                                slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
+                            fallback: "Atomist Uhura Project Analysis",
                             actions: [actionableButton<{ owner: string, repo: string }>(
-                                { text: "Enable Uhura" },
+                                { text: "Yes" },
                                 enableCommand(sdm), {
+                                    owner: gi.goalEvent.repo.owner,
+                                    repo: gi.goalEvent.repo.name,
+                                }), actionableButton<{ owner: string, repo: string }>(
+                                { text: "No" },
+                                disableCommand(sdm), {
                                     owner: gi.goalEvent.repo.owner,
                                     repo: gi.goalEvent.repo.name,
                                 })],
@@ -256,6 +269,8 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         sdm.addCommand(deleteRepo);
 
         sdm.addCodeInspectionCommand(assessInspection(analyzer));
+
+        sdm.addCodeTransformCommand(PackageScriptCodeTransform);
 
         sdm.addGeneratorCommand(importSeed(analyzer));
         sdm.addCommand(addSeed(analyzer));

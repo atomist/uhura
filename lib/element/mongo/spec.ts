@@ -19,8 +19,10 @@ import {
     K8sServiceSpec,
 } from "@atomist/sdm-core";
 import { K8sServiceRegistrationType } from "@atomist/sdm-core/lib/pack/k8s/service";
-import { Services } from "@atomist/sdm-pack-analysis";
-import { ServicesGoalsKey } from "@atomist/sdm-pack-analysis/lib/analysis/support/enrichGoal";
+import {
+    Services,
+    ServicesGoalsKey,
+} from "@atomist/sdm-pack-analysis";
 import * as k8s from "@kubernetes/client-node";
 import { DeepPartial } from "ts-essentials";
 
