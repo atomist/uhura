@@ -54,7 +54,7 @@ import {
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
-import {PackageScriptCodeTransform } from "@atomist/sdm-pack-analysis-node/lib/transform/scriptTransform";
+import { PackageScriptCodeTransform } from "@atomist/sdm-pack-analysis-node/lib/transform/scriptTransform";
 import { issueSupport } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
 import {
