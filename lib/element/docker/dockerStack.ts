@@ -19,11 +19,11 @@ import {
 } from "@atomist/sdm";
 import { StackSupport } from "@atomist/sdm-pack-analysis";
 import { DockerfileInterpreter } from "./DockerfileInterpreter";
-import { dockerScanner } from "./dockerScanner";
+import { DockerScanner } from "./dockerScanner";
 
 export function dockerStack(sdm: SoftwareDeliveryMachineConfiguration): StackSupport {
     return {
-        scanners: [dockerScanner],
+        scanners: [new DockerScanner()],
         interpreters: [new DockerfileInterpreter()],
         transformRecipeContributors: [],
     };
