@@ -37,3 +37,22 @@ export const IsSdmEnabled: PushTest = pushTest(
             { scope: PreferenceScope.Sdm }) === true;
         return repoEnabled;
     });
+
+/**
+ * Is the repo explicitly disabled?
+ * @type {PushTest}
+ */
+export const IsSdmDisabled: PushTest = pushTest(
+    "isSdmDisabled",
+    async p => {
+        const orgDisabled = await p.preferences.get<boolean>(
+            `${p.id.owner}:disabled`,
+            { scope: PreferenceScope.Sdm }) === true;
+        if (orgDisabled) {
+            return true;
+        }
+        const repoDisabled = await p.preferences.get<boolean>(
+            `${p.id.owner}/${p.id.repo}:disabled`,
+            { scope: PreferenceScope.Sdm }) === true;
+        return repoDisabled;
+    });

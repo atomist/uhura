@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Configuration } from "@atomist/automation-client";
+import { configureDashboardNotifications } from "@atomist/automation-client-ext-dashboard";
 import {
     AutoCodeInspection,
+    CachingProjectLoader,
     Fingerprint,
+    GitHubLazyProjectLoader,
+    SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import {
     CompressingGoalCache,
@@ -31,12 +34,14 @@ const machineOptions: ConfigureOptions = {
     requiredConfigurationValues: [],
 };
 
-export const configuration: Configuration = {
+export const configuration: SoftwareDeliveryMachineConfiguration = {
     postProcessors: [
+        configureDashboardNotifications,
         configureSdm(machineMaker(), machineOptions),
     ],
     sdm: {
         goalCache: new CompressingGoalCache(new FileSystemGoalCacheArchiveStore()),
+        projectLoader: new GitHubLazyProjectLoader(new CachingProjectLoader()),
         goal: {
             optional: [
                 new Fingerprint(),

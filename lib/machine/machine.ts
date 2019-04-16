@@ -15,9 +15,11 @@
  */
 
 import {
+    actionableButton,
     AnyPush,
     attachFacts,
     DoNotSetAnyGoalsAndLock,
+    goals,
     ImmaterialGoals,
     not,
     onAnyPush,
@@ -28,27 +30,37 @@ import {
 } from "@atomist/sdm";
 import {
     createSoftwareDeliveryMachine,
-    gitHubGoalStatus,
-    goalState,
+    githubGoalStatusSupport,
+    goalStateSupport,
+    notificationSupport,
     SoftwareDeliveryMachineMaker,
 } from "@atomist/sdm-core";
 import {
+    allMessages,
+    allTechnologyClassifications,
     analysisSupport,
     assessInspection,
     buildGoals,
     checkGoals,
+    Classification,
     containerGoals,
     controlGoals,
     deployGoals,
     Interpretation,
     materialChange,
+    messageGoal,
     messagingGoals,
     ProjectAnalyzer,
     releaseGoals,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
+import {PackageScriptCodeTransform } from "@atomist/sdm-pack-analysis-node/lib/transform/scriptTransform";
 import { issueSupport } from "@atomist/sdm-pack-issue";
 import { k8sSupport } from "@atomist/sdm-pack-k8s";
+import {
+    bold,
+    italic,
+} from "@atomist/slack-messages";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
     deleteRepo,
@@ -81,7 +93,10 @@ import {
     enableGoalCommand,
     enableOrgCommand,
 } from "../preference/enablement";
-import { IsSdmEnabled } from "../preference/pushTests";
+import {
+    IsSdmDisabled,
+    IsSdmEnabled,
+} from "../preference/pushTests";
 import { defaultAnalyzerFactory } from "./defaultAnalyzerFactory";
 import { DefaultDotnetCoreSeeds } from "./dotnetCoreSeeds";
 import { DefaultNodeSeeds } from "./nodeSeeds";
@@ -151,22 +166,71 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         interface Interpreted {
             interpretation: Interpretation;
+            classification: Classification;
         }
+
+        // TODO move this to a better place in analysis pack
+        const classificationMessageGoal = goals("messages").plan(messageGoal(async gi => {
+            return gi.configuration.sdm.projectLoader.doWithProject({ ...gi, readOnly: true }, async p => {
+                const classification = await analyzer.classify(p, gi);
+                const classifications = allTechnologyClassifications(classification);
+                const slug = bold(`${gi.goalEvent.repo.owner}/${gi.goalEvent.repo.name}`);
+                const stacks = classifications.map(c => c.name);
+
+                const messages = [{
+                    message:
+                        {
+                            text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
+                                slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
+                            fallback: "Atomist Uhura Project Analysis",
+                            actions: [actionableButton<{ owner: string, repo: string }>(
+                                { text: "Yes" },
+                                enableCommand(sdm), {
+                                    owner: gi.goalEvent.repo.owner,
+                                    repo: gi.goalEvent.repo.name,
+                                }), actionableButton<{ owner: string, repo: string }>(
+                                { text: "No" },
+                                disableCommand(sdm), {
+                                    owner: gi.goalEvent.repo.owner,
+                                    repo: gi.goalEvent.repo.name,
+                                })],
+                        },
+                }, ...allMessages(classification)];
+                return messages;
+            });
+        })).andLock();
 
         // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
-            whenPushSatisfies(not(IsSdmEnabled)).setGoals(DoNotSetAnyGoalsAndLock),
+            whenPushSatisfies(IsSdmDisabled).setGoals(DoNotSetAnyGoalsAndLock),
+
+            // It's not explicitly enabled: Let's see if we know how to do it
+            whenPushSatisfies(not(IsSdmEnabled))
+                .setGoalsWhen(async pu => {
+                    const classification = await analyzer.classify(pu.project, pu);
+                    const classifications = allTechnologyClassifications(classification);
+                    return classifications.length > 0 ?
+                        classificationMessageGoal :
+                        DoNotSetAnyGoalsAndLock;
+                }),
 
             // Compute the Interpretation and attach it to the current push invocation
             attachFacts<Interpreted>(async pu => {
+                const classification = await analyzer.classify(pu.project, pu);
                 const interpretation = await analyzer.interpret(pu.project, pu);
-                return { interpretation };
+                return { interpretation, classification };
             }),
 
             // If we have messages to send, always send them
             onAnyPush<StatefulPushListenerInvocation<Interpreted>>()
                 .itMeans("messages")
-                .setGoalsWhen(pu => messagingGoals(pu.facts.interpretation, analyzer)),
+                .setGoalsWhen(pu => messagingGoals({
+                        messages: [
+                            ...pu.facts.interpretation.messages,
+                            ...allMessages(pu.facts.classification),
+                        ],
+                    },
+                    analyzer)),
 
             // If the change isn't important, don't do anything
             whenPushSatisfies<StatefulPushListenerInvocation<Interpreted>>(materialChange)
@@ -205,6 +269,8 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         sdm.addCommand(deleteRepo);
 
         sdm.addCodeInspectionCommand(assessInspection(analyzer));
+
+        sdm.addCodeTransformCommand(PackageScriptCodeTransform);
 
         sdm.addGeneratorCommand(importSeed(analyzer));
         sdm.addCommand(addSeed(analyzer));
@@ -275,9 +341,10 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Extension Pack registrations
         sdm.addExtensionPacks(
+            notificationSupport(),
             analysisSupport(),
-            gitHubGoalStatus(),
-            goalState(),
+            githubGoalStatusSupport(),
+            goalStateSupport(),
             k8sSupport(),
             issueSupport({
                 labelIssuesOnDeployment: true,
