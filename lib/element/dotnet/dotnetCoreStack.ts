@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SoftwareDeliveryMachineConfiguration } from "@atomist/sdm";
+import { SoftwareDeliveryMachine } from "@atomist/sdm";
 import { StackSupport } from "@atomist/sdm-pack-analysis";
 import { DotnetCoreInterpreter } from "./DotnetCoreInterpreter";
 import { dotnetCoreScanner } from "./dotnetCoreScanner";
@@ -23,7 +23,7 @@ import { DotnetCoreTransformRecipeContributor } from "./dotnetCoreTransforms";
 /**
  * StackSupport for .NET Core
  */
-export function dotnetCoreStack(sdm: SoftwareDeliveryMachineConfiguration): StackSupport {
+export function dotnetCoreStack(sdm: SoftwareDeliveryMachine): StackSupport {
     return {
         scanners: [dotnetCoreScanner],
         interpreters: [new DotnetCoreInterpreter()],

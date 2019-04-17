@@ -44,19 +44,23 @@ import { AnalyzerFactory } from "./machine";
  */
 export const defaultAnalyzerFactory: AnalyzerFactory = sdm => {
     return analyzerBuilder(sdm)
-        .withStack(nodeStackSupport({
+        .withStack(nodeStackSupport(sdm, {
             configureTestGoal: g => g.withService(Mongo),
         }))
-        .withStack(javaStackSupport())
-        .withStack(springBootStackSupport(sdm.configuration))
-        .withStack(dotnetCoreStack(sdm.configuration))
-        .withStack(dockerStack(sdm.configuration))
+        .withStack(javaStackSupport(sdm))
+        .withStack(springBootStackSupport(sdm))
+        .withStack(dotnetCoreStack(sdm))
+        .withStack(dockerStack(sdm))
+
         .withScanner(k8sScanner)
         .withScanner(travisScanner)
         .withScanner(preferencesScanner)
+
         .withInterpreter(new EmulateTravisBuildInterpreter())
         .withInterpreter(new K8sDeployInterpreter())
-        .withInterpreter(new CodeInspectionInterpreter(singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true)))
+        .withInterpreter(new CodeInspectionInterpreter(
+            singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true)),
+        )
 
         // Add support for generic seeds...
         .withTransformRecipeContributor({

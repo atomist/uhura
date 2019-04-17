@@ -48,7 +48,7 @@ import {
     DockerBuild,
     DockerProgressReporter,
 } from "@atomist/sdm-pack-docker";
-import { getDockerFile } from "../docker/dockerScanner";
+import { getDockerfile } from "../docker/dockerScanner";
 import {
     DotnetCoreProjectFileGlob,
     DotnetCoreStack,
@@ -75,7 +75,7 @@ export class DotnetCoreInterpreter implements Interpreter {
             progressReporter: DockerProgressReporter,
             logInterpreter: LogSuppressor,
             options: {
-                dockerfileFinder: getDockerFile,
+                dockerfileFinder: getDockerfile,
             },
         });
 

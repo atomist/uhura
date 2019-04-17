@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {
-    SoftwareDeliveryMachineConfiguration,
-} from "@atomist/sdm";
+import { SoftwareDeliveryMachine } from "@atomist/sdm";
 import { StackSupport } from "@atomist/sdm-pack-analysis";
 import { DockerfileInterpreter } from "./DockerfileInterpreter";
 import { DockerScanner } from "./dockerScanner";
 
-export function dockerStack(sdm: SoftwareDeliveryMachineConfiguration): StackSupport {
+export function dockerStack(sdm: SoftwareDeliveryMachine): StackSupport {
     return {
         scanners: [new DockerScanner()],
         interpreters: [new DockerfileInterpreter()],

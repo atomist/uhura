@@ -48,7 +48,7 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
 
     get scan(): TechnologyScanner<DockerStack> {
         return async p => {
-            const dockerfile = await getDockerFile(p);
+            const dockerfile = await getDockerfile(p);
 
             if (!dockerfile) {
                 return undefined;
@@ -63,10 +63,10 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
     }
 }
 
-export async function getDockerFile(p: Project): Promise<string> {
-    let dockerfile: string;
-    await projectUtils.doWithFiles(p, "**/Dockerfile", async f => {
-        dockerfile = f.path;
-    });
-    return dockerfile;
+export async function getDockerfile(p: Project): Promise<string> {
+    const dockerfiles = await projectUtils.gatherFromFiles(p, "**/Dockerfile", async f => f);
+    if (!!dockerfiles && dockerfiles.length > 0) {
+        return dockerfiles[0].path;
+    }
+    return undefined;
 }
