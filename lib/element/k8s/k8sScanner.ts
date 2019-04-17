@@ -28,6 +28,7 @@ import {
 export interface K8sStack extends TechnologyElement {
     name: "k8s";
     deploymentMapping: DeploymentMapping;
+    dockerfilePath: string;
 }
 
 export const k8sScanner: TechnologyScanner<K8sStack> = async (p, ctx) => {
@@ -49,6 +50,7 @@ export const k8sScanner: TechnologyScanner<K8sStack> = async (p, ctx) => {
         const stack: K8sStack = {
             tags: ["k8s"],
             name: "k8s",
+            dockerfilePath: dockerfile,
             deploymentMapping: await getCustomDeploymentMapping(ctx),
         };
         return stack;

@@ -18,6 +18,7 @@ import {
     GitProject,
     HandlerContext,
     logger,
+    Project,
     QueryNoCacheOptions,
 } from "@atomist/automation-client";
 import {
@@ -98,6 +99,17 @@ To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/ge
     }
 }
 
+async function extractPort(p: Project, dockerfilePath: string): Promise<number> {
+    const portRegex = /EXPOSE (\d*)/;
+    const dockerFileContent = await (await p.getFile(dockerfilePath)).getContent();
+    const match = dockerFileContent.match(portRegex);
+    if (!!match) {
+        return Number.parseInt(match[1], 10);
+    } else {
+        return undefined;
+    }
+}
+
 export function applicationDataCallback(phase: "testing" | "production"): ApplicationDataCallback {
     return async (app: KubernetesApplication,
                   p: GitProject,
@@ -128,10 +140,14 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                     });
 
                     const clusterUrl = _.get(k8sCluster, "KubernetesClusterProvider[0].url");
+                    const port = await extractPort(p, k8sStack.dockerfilePath);
                     if (!!clusterUrl) {
                         const u = url.parse(clusterUrl);
                         app.host = `${p.name}.${app.ns}.${u.host}.nip.io`;
                         app.path = "/";
+                        if (!!port) {
+                            app.port = port;
+                        }
                     }
                 }
             }
