@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-import { projectUtils } from "@atomist/automation-client";
+import {
+    projectUtils,
+} from "@atomist/automation-client";
 import { microgrammar } from "@atomist/microgrammar";
 import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import { getDockerFile } from "../docker/dockerScanner";
 
 export const DotnetCoreProjectFileGlob = "*.csproj";
 
 export interface DotnetCoreStack extends TechnologyElement {
     name: "dotnetcore";
     target: string;
+    hasDockerFile: boolean;
 }
 
 /**
@@ -61,6 +65,7 @@ export const dotnetCoreScanner: TechnologyScanner<DotnetCoreStack> = async p => 
         const stack: DotnetCoreStack = {
             tags: ["dotnetcore"],
             name: "dotnetcore",
+            hasDockerFile: !!(await getDockerFile(p)),
             target: targetMatch.target,
         };
 

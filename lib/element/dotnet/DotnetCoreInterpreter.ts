@@ -45,6 +45,11 @@ import {
     spawnBuilder,
 } from "@atomist/sdm-pack-build";
 import {
+    DockerBuild,
+    DockerProgressReporter,
+} from "@atomist/sdm-pack-docker";
+import { getDockerFile } from "../docker/dockerScanner";
+import {
     DotnetCoreProjectFileGlob,
     DotnetCoreStack,
 } from "./dotnetCoreScanner";
@@ -65,6 +70,15 @@ export class DotnetCoreInterpreter implements Interpreter {
         builder: dotnetCoreBuilder(),
     }).withProjectListener(DotnetCoreVersionProjectListener);
 
+    private readonly dockerBuildGoal: DockerBuild = new DockerBuild()
+        .with({
+            progressReporter: DockerProgressReporter,
+            logInterpreter: LogSuppressor,
+            options: {
+                dockerfileFinder: getDockerFile,
+            },
+        });
+
     public async enrich(interpretation: Interpretation): Promise<boolean> {
 
         const dotnetCoreStack = interpretation.reason.analysis.elements.dotnetcore as DotnetCoreStack;
@@ -75,6 +89,10 @@ export class DotnetCoreInterpreter implements Interpreter {
         interpretation.buildGoals = goals("build")
             .plan(this.versionGoal)
             .plan(this.buildGoal).after(this.versionGoal);
+
+        if (dotnetCoreStack.hasDockerFile) {
+            interpretation.containerBuildGoals = goals("docker build").plan(this.dockerBuildGoal);
+        }
 
         interpretation.materialChangePushTests.push(isMaterialChange({
             extensions: ["csproj", "cs", "cshtml", "json", "html", "css"],

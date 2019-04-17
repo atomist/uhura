@@ -15,14 +15,16 @@
  */
 
 import {
-    presenceTestedElementScanner,
-    TechnologyElement,
-    TechnologyScanner,
-} from "@atomist/sdm-pack-analysis";
+    SoftwareDeliveryMachineConfiguration,
+} from "@atomist/sdm";
+import { StackSupport } from "@atomist/sdm-pack-analysis";
+import { DockerfileInterpreter } from "./DockerfileInterpreter";
+import { DockerScanner } from "./dockerScanner";
 
-/**
- * Look for the presence of a Maven POM.
- */
-export const mavenScanner: TechnologyScanner<TechnologyElement> =
-    presenceTestedElementScanner({ name: "maven", tags: ["maven"] },
-        async p => p.hasFile("pom.xml"));
+export function dockerStack(sdm: SoftwareDeliveryMachineConfiguration): StackSupport {
+    return {
+        scanners: [new DockerScanner()],
+        interpreters: [new DockerfileInterpreter()],
+        transformRecipeContributors: [],
+    };
+}

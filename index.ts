@@ -23,8 +23,10 @@ import {
     SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
 import {
+    CompressingGoalCache,
     ConfigureOptions,
     configureSdm,
+    FileSystemGoalCacheArchiveStore,
 } from "@atomist/sdm-core";
 import { machineMaker } from "./lib/machine/machine";
 
@@ -38,6 +40,7 @@ export const configuration: SoftwareDeliveryMachineConfiguration = {
         configureSdm(machineMaker(), machineOptions),
     ],
     sdm: {
+        goalCache: new CompressingGoalCache(new FileSystemGoalCacheArchiveStore()),
         projectLoader: new GitHubLazyProjectLoader(new CachingProjectLoader()),
         goal: {
             optional: [

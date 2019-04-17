@@ -27,7 +27,7 @@ import {
 } from "@atomist/sdm-pack-analysis-spring";
 import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import { CodeInspectionInterpreter } from "../element/common/codeInspectionInterpreter";
-import { DockerfileInterpreter } from "../element/docker/DockerfileInterpreter";
+import { dockerStack } from "../element/docker/dockerStack";
 import { dotnetCoreStack } from "../element/dotnet/dotnetCoreStack";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
 import { k8sScanner } from "../element/k8s/k8sScanner";
@@ -50,12 +50,10 @@ export const defaultAnalyzerFactory: AnalyzerFactory = sdm => {
         .withStack(javaStackSupport())
         .withStack(springBootStackSupport(sdm.configuration))
         .withStack(dotnetCoreStack(sdm.configuration))
-
+        .withStack(dockerStack(sdm.configuration))
         .withScanner(k8sScanner)
         .withScanner(travisScanner)
         .withScanner(preferencesScanner)
-
-        .withInterpreter(new DockerfileInterpreter())
         .withInterpreter(new EmulateTravisBuildInterpreter())
         .withInterpreter(new K8sDeployInterpreter())
         .withInterpreter(new CodeInspectionInterpreter(singleIssuePerCategoryManaging(sdm.configuration.name, true, () => true)))
