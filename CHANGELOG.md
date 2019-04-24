@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Add support for .NET Core. [#25](https://github.com/atomist/uhura/issues/25)
 -   Add support for sending messages from a Project Analysis. [#27](https://github.com/atomist/uhura/issues/27)
 -   Onboarding support. [#31](https://github.com/atomist/uhura/issues/31)
+-   Gradle support for Uhura. [#20](https://github.com/atomist/uhura/issues/20)
 
 ### Changed
 
