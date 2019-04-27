@@ -59,6 +59,7 @@ import { k8sSupport } from "@atomist/sdm-pack-k8s";
 import {
     bold,
     italic,
+    url,
 } from "@atomist/slack-messages";
 import { SelectedRepo } from "../common/SelectedRepoFinder";
 import {
@@ -173,7 +174,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             return gi.configuration.sdm.projectLoader.doWithProject({ ...gi, readOnly: true }, async p => {
                 const classification = await analyzer.classify(p, gi);
                 const classifications = allTechnologyClassifications(classification);
-                const slug = bold(`${gi.goalEvent.repo.owner}/${gi.goalEvent.repo.name}`);
+                const slug = bold(url(gi.goalEvent.push.repo.url, `${gi.goalEvent.repo.owner}/${gi.goalEvent.repo.name}`));
                 const stacks = classifications.map(c => c.name);
 
                 const messages = [{
