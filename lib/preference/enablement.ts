@@ -66,8 +66,8 @@ export function createToggleSdmEnablementCommand(sdm: SoftwareDeliveryMachine,
                                                  enable: EnablementState): CommandHandlerRegistration<{ owner: string, repo: string }> {
     return {
         intent: `${enable === EnablementState.Enabled ? "enable" : "disable"} ${sdm.configuration.name.replace("@", "")}`,
-        name: enable ? "EnableCommand" : "DisableCommand",
-        description: enable ? "Enable SDM on a repository" : "Disable SDM on a repository",
+        name: enable === EnablementState.Enabled ? "EnableCommand" : "DisableCommand",
+        description: enable === EnablementState.Enabled ? "Enable SDM on a repository" : "Disable SDM on a repository",
         autoSubmit: true,
         parameters: OwnerAndRepo,
         listener: async ci => toggleSdmEnablement({ ...ci.parameters }, enable, ci),
@@ -78,8 +78,8 @@ export function createToggleSdmEnablementOrgCommand(sdm: SoftwareDeliveryMachine
                                                     enable: EnablementState): CommandHandlerRegistration<{ owner: string }> {
     return {
         intent: `${enable === EnablementState.Enabled ? "enable org" : "disable org"} ${sdm.configuration.name.replace("@", "")}`,
-        name: enable ? "EnableOrgCommand" : "DisableOrgCommand",
-        description: enable ? "Enable SDM on an organization" : "Disable SDM on an organization",
+        name: enable === EnablementState.Enabled ? "EnableOrgCommand" : "DisableOrgCommand",
+        description: enable === EnablementState.Enabled ? "Enable SDM on an organization" : "Disable SDM on an organization",
         autoSubmit: true,
         parameters: { owner: OwnerAndRepo.owner },
         listener: async ci => toggleSdmEnablement({ ...ci.parameters }, enable, ci),
