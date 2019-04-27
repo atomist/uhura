@@ -91,11 +91,11 @@ export class K8sDeployInterpreter implements Interpreter {
         if (!k8sStack.deploymentMapping || (!k8sStack.deploymentMapping.testing && !k8sStack.deploymentMapping.production)) {
             const push: OnPushToAnyBranch.Push = _.get(ctx, "push") || _.get(ctx, "goalEvent.push");
             const slug = slack.bold(`${push.repo.owner}/${push.repo.name}`);
-            interpretation.messages.push({
+            /*interpretation.messages.push({
                 message: `Atomist Uhura allows you to deploy your project ${slug} into your own Kubernetes clusters.
 
 To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
-            });
+            });*/
         }
 
         return false;
