@@ -36,13 +36,6 @@ export interface DockerStack extends TechnologyElement {
 export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
 
     public async classify(p: FastProject, ctx: SdmContext): Promise<TechnologyClassification | undefined> {
-        if (!await p.hasFile("Dockerfile")) {
-            return {
-                name: "docker",
-                tags: ["docker"],
-                messages: [{ message: "Adding a Dockerfile to this project will trigger a Docker container build." }],
-            };
-        }
         return undefined;
     }
 
