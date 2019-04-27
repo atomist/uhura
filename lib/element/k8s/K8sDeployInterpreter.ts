@@ -23,6 +23,8 @@ import {
 import {
     Goal,
     goals,
+    OnPushToAnyBranch,
+    SdmContext,
     SdmGoalEvent,
 } from "@atomist/sdm";
 import {
@@ -35,6 +37,7 @@ import {
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
 import { ApplicationDataCallback } from "@atomist/sdm-pack-k8s/lib/deploy/goal";
+import { bold } from "@atomist/slack-messages";
 import * as slack from "@atomist/slack-messages";
 import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
@@ -68,7 +71,7 @@ export class K8sDeployInterpreter implements Interpreter {
             applicationData: applicationDataCallback("production"),
         });
 
-    public async enrich(interpretation: Interpretation): Promise<boolean> {
+    public async enrich(interpretation: Interpretation, ctx: SdmContext): Promise<boolean> {
         const k8sStack = interpretation.reason.analysis.elements.k8s as K8sStack;
         if (!k8sStack) {
             return false;
@@ -87,8 +90,10 @@ export class K8sDeployInterpreter implements Interpreter {
         }
 
         if (!k8sStack.deploymentMapping || (!k8sStack.deploymentMapping.testing && !k8sStack.deploymentMapping.production)) {
+            const push: OnPushToAnyBranch.Push = _.get(ctx, "push") || _.get(ctx, "goalEvent.push");
+            const slug = bold(`${push.repo.owner}/${push.repo.name}`);
             interpretation.messages.push({
-                message: `Atomist Uhura allows you to deploy your applications into your own Kubernetes clusters.
+                message: `Atomist Uhura allows you to deploy your project ${slug} into your own Kubernetes clusters.
 
 To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/getting-started/", "instructions")}.`,
             });
