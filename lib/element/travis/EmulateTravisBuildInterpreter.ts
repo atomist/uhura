@@ -72,6 +72,8 @@ export class EmulateTravisBuildInterpreter implements Interpreter {
                     services: {},
                     dependencies: [],
                     referencedEnvironmentVariables: [],
+                    fingerprints: {},
+                    messages: [],
                 };
                 // Scan the project for Travis. Push rules should ensure
                 // that this is only invoked if there *is* a Travis file
