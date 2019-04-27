@@ -34,18 +34,19 @@ import {
     italic,
 } from "@atomist/slack-messages";
 import * as _ from "lodash";
+import { EnablementState } from "./pushTests";
 
 const OwnerAndRepo = {
     owner: { uri: MappedParameters.GitHubOwner, declarationType: DeclarationType.Mapped },
     repo: { uri: MappedParameters.GitHubRepository, declarationType: DeclarationType.Mapped },
 };
 
-export async function toggleSdmEnablement(repo: { owner: string, repo?: string }, optIn: boolean, ctx: SdmContext): Promise<void> {
+export async function toggleSdmEnablement(repo: { owner: string, repo?: string }, optIn: EnablementState, ctx: SdmContext): Promise<void> {
     const slug = `${repo.owner}${!!repo.repo ? `/${repo.repo}` : ""}`;
-    await ctx.preferences.put(`${slug}:enabled`,
+    await ctx.preferences.put(`${slug}:enablement_state`,
         optIn,
         { scope: PreferenceScope.Sdm });
-    if (optIn) {
+    if (optIn === EnablementState.Enabled) {
         await ctx.addressChannels(
             slackSuccessMessage(
                 `Enable SDM`,
@@ -62,7 +63,7 @@ export async function toggleSdmEnablement(repo: { owner: string, repo?: string }
 }
 
 export function createToggleSdmEnablementCommand(sdm: SoftwareDeliveryMachine,
-                                                 enable: boolean): CommandHandlerRegistration<{ owner: string, repo: string }> {
+                                                 enable: EnablementState): CommandHandlerRegistration<{ owner: string, repo: string }> {
     return {
         intent: `${enable ? "enable" : "disable"} ${sdm.configuration.name.replace("@", "")}`,
         name: enable ? "EnableCommand" : "DisableCommand",
@@ -74,7 +75,7 @@ export function createToggleSdmEnablementCommand(sdm: SoftwareDeliveryMachine,
 }
 
 export function createToggleSdmEnablementOrgCommand(sdm: SoftwareDeliveryMachine,
-                                                    enable: boolean): CommandHandlerRegistration<{ owner: string }> {
+                                                    enable: EnablementState): CommandHandlerRegistration<{ owner: string }> {
     return {
         intent: `${enable ? "enable org" : "disable org"} ${sdm.configuration.name.replace("@", "")}`,
         name: enable ? "EnableOrgCommand" : "DisableOrgCommand",
@@ -90,7 +91,7 @@ export function createToggleSdmEnablementOrgCommand(sdm: SoftwareDeliveryMachine
  * @param sdm
  */
 export function enableCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ owner: string, repo: string }> {
-    return createToggleSdmEnablementCommand(sdm, true);
+    return createToggleSdmEnablementCommand(sdm, EnablementState.Enabled);
 }
 
 /**
@@ -98,7 +99,7 @@ export function enableCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegis
  * @param sdm
  */
 export function disableCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ owner: string, repo: string }> {
-    return createToggleSdmEnablementCommand(sdm, false);
+    return createToggleSdmEnablementCommand(sdm, EnablementState.Disabled);
 }
 
 /**
@@ -106,7 +107,7 @@ export function disableCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegi
  * @param sdm
  */
 export function enableOrgCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ owner: string }> {
-    return createToggleSdmEnablementOrgCommand(sdm, true);
+    return createToggleSdmEnablementOrgCommand(sdm, EnablementState.Enabled);
 }
 
 /**
@@ -114,7 +115,7 @@ export function enableOrgCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRe
  * @param sdm
  */
 export function disableOrgCommand(sdm: SoftwareDeliveryMachine): CommandHandlerRegistration<{ owner: string }> {
-    return createToggleSdmEnablementOrgCommand(sdm, false);
+    return createToggleSdmEnablementOrgCommand(sdm, EnablementState.Disabled);
 }
 
 export async function toggleGoalEnablement(sdm: SoftwareDeliveryMachine,

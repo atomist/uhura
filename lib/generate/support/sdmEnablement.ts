@@ -16,6 +16,7 @@
 
 import { CodeTransform } from "@atomist/sdm";
 import { toggleSdmEnablement } from "../../preference/enablement";
+import { EnablementState } from "../../preference/pushTests";
 
 /**
  * Invoke as a transform in a generator to enable SDM.
@@ -23,6 +24,6 @@ import { toggleSdmEnablement } from "../../preference/enablement";
 export const SdmEnablementTransform: CodeTransform =
     async (p, papi) => {
         // Automatically enable project for this SDM
-        await toggleSdmEnablement({ owner: p.id.owner, repo: p.id.repo }, true, papi);
+        await toggleSdmEnablement({ owner: p.id.owner, repo: p.id.repo }, EnablementState.Enabled, papi);
         return p;
     };

@@ -20,21 +20,26 @@ import {
     PushTest,
 } from "@atomist/sdm";
 
+export enum EnablementState {
+    Enabled = "enabled",
+    Disabled = "disabled",
+}
+
 /**
  * Push test implementation to test if this SDM is enabled for the current project
  */
 export const IsSdmEnabled: PushTest = pushTest(
     "isSdmEnabled",
     async p => {
-        const orgEnabled = await p.preferences.get<boolean>(
-            `${p.id.owner}:enabled`,
-            { scope: PreferenceScope.Sdm }) === true;
+        const orgEnabled = await p.preferences.get<EnablementState>(
+            `${p.id.owner}:enablement_state`,
+            { scope: PreferenceScope.Sdm }) === EnablementState.Enabled;
         if (orgEnabled) {
             return true;
         }
-        const repoEnabled = await p.preferences.get<boolean>(
-            `${p.id.owner}/${p.id.repo}:enabled`,
-            { scope: PreferenceScope.Sdm }) === true;
+        const repoEnabled = await p.preferences.get<EnablementState>(
+            `${p.id.owner}/${p.id.repo}:enablement_state`,
+            { scope: PreferenceScope.Sdm }) === EnablementState.Enabled;
         return repoEnabled;
     });
 
@@ -45,14 +50,14 @@ export const IsSdmEnabled: PushTest = pushTest(
 export const IsSdmDisabled: PushTest = pushTest(
     "isSdmDisabled",
     async p => {
-        const orgDisabled = await p.preferences.get<boolean>(
-            `${p.id.owner}:disabled`,
-            { scope: PreferenceScope.Sdm }) === true;
+        const orgDisabled = await p.preferences.get<EnablementState>(
+            `${p.id.owner}:enablement_state`,
+            { scope: PreferenceScope.Sdm }) === EnablementState.Disabled;
         if (orgDisabled) {
             return true;
         }
-        const repoDisabled = await p.preferences.get<boolean>(
-            `${p.id.owner}/${p.id.repo}:disabled`,
-            { scope: PreferenceScope.Sdm }) === true;
+        const repoDisabled = await p.preferences.get<EnablementState>(
+            `${p.id.owner}/${p.id.repo}:enablement_state`,
+            { scope: PreferenceScope.Sdm }) === EnablementState.Disabled;
         return repoDisabled;
     });
