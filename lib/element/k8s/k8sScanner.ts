@@ -20,6 +20,7 @@ import {
     TechnologyElement,
     TechnologyScanner,
 } from "@atomist/sdm-pack-analysis";
+import * as _ from "lodash";
 import {
     DeploymentMapping,
     getCustomDeploymentMapping,
@@ -40,11 +41,12 @@ export const k8sScanner: TechnologyScanner<K8sStack> = async (p, ctx) => {
         return undefined;
     }
 
-    if (!(ctx as any).push) {
+    const push: OnPushToAnyBranch.Push = _.get(ctx, "push") || _.get(ctx, "goalEvent.push");
+
+    if (!push) {
         return undefined;
     }
 
-    const push: OnPushToAnyBranch.Push = (ctx as any).push;
     if (push.branch === push.repo.defaultBranch) {
         const stack: K8sStack = {
             tags: ["k8s"],
