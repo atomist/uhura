@@ -37,7 +37,6 @@ import {
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
 import { ApplicationDataCallback } from "@atomist/sdm-pack-k8s/lib/deploy/goal";
-import { bold } from "@atomist/slack-messages";
 import * as slack from "@atomist/slack-messages";
 import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
@@ -91,7 +90,7 @@ export class K8sDeployInterpreter implements Interpreter {
 
         if (!k8sStack.deploymentMapping || (!k8sStack.deploymentMapping.testing && !k8sStack.deploymentMapping.production)) {
             const push: OnPushToAnyBranch.Push = _.get(ctx, "push") || _.get(ctx, "goalEvent.push");
-            const slug = bold(`${push.repo.owner}/${push.repo.name}`);
+            const slug = slack.bold(`${push.repo.owner}/${push.repo.name}`);
             interpretation.messages.push({
                 message: `Atomist Uhura allows you to deploy your project ${slug} into your own Kubernetes clusters.
 
