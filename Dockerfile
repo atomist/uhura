@@ -12,7 +12,7 @@ RUN wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsof
     && apt-get install -y dotnet-sdk-2.2
 
 RUN apt-get update && apt-get install -y \
-        openjdk-8-jdk-headless maven \
+        openjdk-11-jdk maven \
         libfontconfig \
     && rm -rf /var/lib/apt/lists/*
 
