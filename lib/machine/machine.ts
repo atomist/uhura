@@ -183,17 +183,24 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                             text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
                                 slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
                             fallback: "Atomist Uhura Project Analysis",
-                            actions: [actionableButton<{ owner: string, repo: string }>(
-                                { text: "Yes" },
-                                enableCommand(sdm), {
-                                    owner: gi.goalEvent.repo.owner,
-                                    repo: gi.goalEvent.repo.name,
-                                }), actionableButton<{ owner: string, repo: string }>(
-                                { text: "No" },
-                                disableCommand(sdm), {
-                                    owner: gi.goalEvent.repo.owner,
-                                    repo: gi.goalEvent.repo.name,
-                                })],
+                            actions: [
+                                actionableButton<{ owner: string, repo: string }>(
+                                    { text: "Yes" },
+                                    enableCommand(sdm), {
+                                        owner: gi.goalEvent.repo.owner,
+                                        repo: gi.goalEvent.repo.name,
+                                    }),
+                                actionableButton<{ owner: string, repo: string }>(
+                                    { text: "No" },
+                                    disableCommand(sdm), {
+                                        owner: gi.goalEvent.repo.owner,
+                                        repo: gi.goalEvent.repo.name,
+                                    }),
+                                actionableButton<{ owner: string }>(
+                                    { text: "No for All" },
+                                    disableOrgCommand(sdm), {
+                                        owner: gi.goalEvent.repo.owner,
+                                    })],
                         },
                 }, ...allMessages(classification)];
                 return messages;
