@@ -181,41 +181,43 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                     const slug = bold(url(pu.push.repo.url, `${pu.push.repo.owner}/${pu.push.repo.name}`));
                     const stacks = classifications.map(c => c.name);
 
-                    const messages = [{
-                        message:
-                            {
-                                text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
-                                    slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
-                                fallback: "Atomist Uhura Project Analysis",
-                                actions: [
-                                    actionableButton<{ owner: string, repo: string }>(
-                                        { text: "Yes" },
-                                        enableCommand(sdm), {
-                                            owner: pu.push.repo.owner,
-                                            repo: pu.push.repo.name,
-                                        }),
-                                    actionableButton<{ owner: string, repo: string }>(
-                                        { text: "No" },
-                                        disableCommand(sdm), {
-                                            owner: pu.push.repo.owner,
-                                            repo: pu.push.repo.name,
-                                        }),
-                                    actionableButton<{ owner: string }>(
-                                        { text: "No for All" },
-                                        disableOrgCommand(sdm), {
-                                            owner: pu.push.repo.owner,
-                                        })],
-                            },
-                    }, ...allMessages(classification)];
+                    if (stacks.length > 0) {
+                        const messages = [{
+                            message:
+                                {
+                                    text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
+                                        slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
+                                    fallback: "Atomist Uhura Project Analysis",
+                                    actions: [
+                                        actionableButton<{ owner: string, repo: string }>(
+                                            { text: "Yes" },
+                                            enableCommand(sdm), {
+                                                owner: pu.push.repo.owner,
+                                                repo: pu.push.repo.name,
+                                            }),
+                                        actionableButton<{ owner: string, repo: string }>(
+                                            { text: "No" },
+                                            disableCommand(sdm), {
+                                                owner: pu.push.repo.owner,
+                                                repo: pu.push.repo.name,
+                                            }),
+                                        actionableButton<{ owner: string }>(
+                                            { text: "No for All" },
+                                            disableOrgCommand(sdm), {
+                                                owner: pu.push.repo.owner,
+                                            })],
+                                },
+                        }, ...allMessages(classification)];
 
-                    await sendMessages(
-                        messages,
-                        {
-                            owner: pu.push.repo.owner,
-                            name: pu.push.repo.name,
-                        },
-                        pu.push.repo.channels,
-                        pu);
+                        await sendMessages(
+                            messages,
+                            {
+                                owner: pu.push.repo.owner,
+                                name: pu.push.repo.name,
+                            },
+                            pu.push.repo.channels,
+                            pu);
+                    }
 
                     return DoNotSetAnyGoalsAndLock;
                 }),
