@@ -22,6 +22,8 @@ import {
     ImmaterialGoals,
     not,
     onAnyPush,
+    ProviderType,
+    pushTest,
     PushTest,
     SoftwareDeliveryMachine,
     StatefulPushListenerInvocation,
@@ -170,6 +172,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
+            whenPushSatisfies(not(IsGitHub)).setGoals(DoNotSetAnyGoalsAndLock),
             whenPushSatisfies(IsSdmDisabled).setGoals(DoNotSetAnyGoalsAndLock),
 
             // It's not explicitly enabled: Let's see if we know how to do it
@@ -386,3 +389,7 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
         return sdm;
     };
 }
+
+const IsGitHub: PushTest = pushTest("IsGitHub", async p => {
+    return p.push.repo.org.provider.providerType === ProviderType.github_com;
+});
