@@ -19,7 +19,6 @@ import {
     AnyPush,
     attachFacts,
     DoNotSetAnyGoalsAndLock,
-    goals,
     ImmaterialGoals,
     not,
     onAnyPush,
@@ -48,10 +47,10 @@ import {
     deployGoals,
     Interpretation,
     materialChange,
-    messageGoal,
     messagingGoals,
     ProjectAnalyzer,
     releaseGoals,
+    sendMessages,
     testGoals,
 } from "@atomist/sdm-pack-analysis";
 import { issueSupport } from "@atomist/sdm-pack-issue";
@@ -169,44 +168,6 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
             classification: Classification;
         }
 
-        // TODO move this to a better place in analysis pack
-        const classificationMessageGoal = goals("messages").plan(messageGoal(async gi => {
-            return gi.configuration.sdm.projectLoader.doWithProject({ ...gi, readOnly: true }, async p => {
-                const classification = await analyzer.classify(p, gi);
-                const classifications = allTechnologyClassifications(classification);
-                const slug = bold(url(gi.goalEvent.push.repo.url, `${gi.goalEvent.repo.owner}/${gi.goalEvent.repo.name}`));
-                const stacks = classifications.map(c => c.name);
-
-                const messages = [{
-                    message:
-                        {
-                            text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
-                                slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
-                            fallback: "Atomist Uhura Project Analysis",
-                            actions: [
-                                actionableButton<{ owner: string, repo: string }>(
-                                    { text: "Yes" },
-                                    enableCommand(sdm), {
-                                        owner: gi.goalEvent.repo.owner,
-                                        repo: gi.goalEvent.repo.name,
-                                    }),
-                                actionableButton<{ owner: string, repo: string }>(
-                                    { text: "No" },
-                                    disableCommand(sdm), {
-                                        owner: gi.goalEvent.repo.owner,
-                                        repo: gi.goalEvent.repo.name,
-                                    }),
-                                actionableButton<{ owner: string }>(
-                                    { text: "No for All" },
-                                    disableOrgCommand(sdm), {
-                                        owner: gi.goalEvent.repo.owner,
-                                    })],
-                        },
-                }, ...allMessages(classification)];
-                return messages;
-            });
-        })).andLock();
-
         // Respond to pushes to set up standard Uhura delivery stages, based on Interpretation
         sdm.withPushRules(
             whenPushSatisfies(IsSdmDisabled).setGoals(DoNotSetAnyGoalsAndLock),
@@ -216,9 +177,47 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
                 .setGoalsWhen(async pu => {
                     const classification = await analyzer.classify(pu.project, pu);
                     const classifications = allTechnologyClassifications(classification);
-                    return classifications.length > 0 ?
-                        classificationMessageGoal :
-                        DoNotSetAnyGoalsAndLock;
+
+                    const slug = bold(url(pu.push.repo.url, `${pu.push.repo.owner}/${pu.push.repo.name}`));
+                    const stacks = classifications.map(c => c.name);
+
+                    const messages = [{
+                        message:
+                            {
+                                text: `Atomist Uhura detected ${italic(stacks.join(", "))} ${stacks.length > 1 ? "stacks" : "stack"} in your project ${
+                                    slug} and knows how to build and deliver these projects. Would you like to enable delivery now?`,
+                                fallback: "Atomist Uhura Project Analysis",
+                                actions: [
+                                    actionableButton<{ owner: string, repo: string }>(
+                                        { text: "Yes" },
+                                        enableCommand(sdm), {
+                                            owner: pu.push.repo.owner,
+                                            repo: pu.push.repo.name,
+                                        }),
+                                    actionableButton<{ owner: string, repo: string }>(
+                                        { text: "No" },
+                                        disableCommand(sdm), {
+                                            owner: pu.push.repo.owner,
+                                            repo: pu.push.repo.name,
+                                        }),
+                                    actionableButton<{ owner: string }>(
+                                        { text: "No for All" },
+                                        disableOrgCommand(sdm), {
+                                            owner: pu.push.repo.owner,
+                                        })],
+                            },
+                    }, ...allMessages(classification)];
+
+                    await sendMessages(
+                        messages,
+                        {
+                            owner: pu.push.repo.owner,
+                            name: pu.push.repo.name,
+                        },
+                        pu.push.repo.channels,
+                        pu);
+
+                    return DoNotSetAnyGoalsAndLock;
                 }),
 
             // Compute the Interpretation and attach it to the current push invocation
