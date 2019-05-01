@@ -29,8 +29,20 @@ import {
     TechnologyClassification,
 } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 
+export interface DockerFile {
+
+    path: string;
+    content: string;
+}
+
 export interface DockerStack extends TechnologyElement {
+
     name: "docker";
+
+    /**
+     * Content of the Dockerfile we found
+     */
+    dockerFile: DockerFile;
 }
 
 export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
@@ -41,21 +53,36 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
 
     get scan(): TechnologyScanner<DockerStack> {
         return async p => {
-            const dockerfile = await getDockerfile(p);
+            const dockerFilePath = await getDockerfile(p);
 
-            if (!dockerfile) {
+            if (!dockerFilePath) {
                 return undefined;
             }
 
-            const stack: DockerStack = {
+            let dockerFile: DockerFile;
+            try {
+                dockerFile = {
+                    path: dockerFilePath,
+                    content: await p.getFile(dockerFilePath).then(f => f.getContent()),
+                };
+            } catch {
+                // Never fail
+            }
+
+            return {
                 tags: ["docker"],
                 name: "docker",
+                dockerFile,
             };
-            return stack;
         };
     }
 }
 
+/**
+ * Return the path of the Docker file
+ * @param {Project} p
+ * @return {Promise<string>}
+ */
 export async function getDockerfile(p: Project): Promise<string> {
     const dockerfiles = await projectUtils.gatherFromFiles(p, "**/Dockerfile", async f => f);
     if (!!dockerfiles && dockerfiles.length > 0) {
