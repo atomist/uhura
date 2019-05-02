@@ -134,6 +134,7 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                     const clusterUrl = _.get(k8sCluster, "KubernetesClusterProvider[0].url");
                     if (!!clusterUrl) {
                         const u = url.parse(clusterUrl);
+                        // tslint:disable:max-line-length
                         if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(u.host)) {
                             // We got an IP address as host
                             app.host = `${p.name}.${app.ns}.${u.host}.nip.io`;
