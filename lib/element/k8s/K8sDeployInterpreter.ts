@@ -141,7 +141,7 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                             app.path = "/";
                         } else {
                             // This provider has a domain name configured; use a new subdomain for the app.
-                            app.host = `${p.name}.${app.ns}.${u.host}`;
+                            app.host = `${p.name}-${app.ns}.${u.host}`;
                             app.path = "/";
                         }
                     }
