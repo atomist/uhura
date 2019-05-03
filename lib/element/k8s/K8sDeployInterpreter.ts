@@ -37,6 +37,7 @@ import {
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
 import { ApplicationDataCallback } from "@atomist/sdm-pack-k8s/lib/deploy/goal";
+import { validName } from "@atomist/sdm-pack-k8s/lib/kubernetes/name";
 import * as slack from "@atomist/slack-messages";
 import * as k8s from "@kubernetes/client-node";
 import * as _ from "lodash";
@@ -137,11 +138,11 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                         // tslint:disable:max-line-length
                         if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(u.host)) {
                             // We got an IP address as host
-                            app.host = `${p.name.toLowerCase()}.${app.ns}.${u.host}.nip.io`;
+                            app.host = `${validName(p.name)}.${app.ns}.${u.host}.nip.io`;
                             app.path = "/";
                         } else {
                             // This provider has a domain name configured; use a new subdomain for the app.
-                            app.host = `${p.name.toLowerCase()}-${app.ns}.${u.host}`;
+                            app.host = `${validName(p.name)}-${app.ns}.${u.host}`;
                             app.path = "/";
                         }
                     }
