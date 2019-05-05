@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 -   Onboarding support. [#31](https://github.com/atomist/uhura/issues/31)
 -   Gradle support for Uhura. [#20](https://github.com/atomist/uhura/issues/20)
 -   Save Dockerfile content. [#38](https://github.com/atomist/uhura/issues/38)
+-   Parse Docker file. [#40](https://github.com/atomist/uhura/issues/40)
 
 ### Changed
 
