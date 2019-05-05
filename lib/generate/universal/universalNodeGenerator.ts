@@ -27,7 +27,6 @@ import {
     UpdateReadmeTitle,
 } from "@atomist/sdm-pack-node";
 import { codeLine } from "@atomist/slack-messages";
-import gitUrlParse = require("git-url-parse");
 import { SelectedRepo } from "../../common/SelectedRepoFinder";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
@@ -36,6 +35,7 @@ import {
     SeedDrivenCommandParams,
     toRepoRef,
 } from "./SeedDrivenCommandParams";
+import gitUrlParse = require("git-url-parse");
 
 export interface UniversalNodeGeneratorParams extends NodeProjectCreationParameters,
     SeedDrivenCommandParams {
@@ -88,7 +88,7 @@ export const replaceSeedSlug: CodeTransform<UniversalNodeGeneratorParams> =
             const newContent = content.replace(
                 new RegExp(
                     `${gitUrl.owner}\/${gitUrl.name}`, "g"),
-                `   ${p.id.owner}/${p.id.repo}`);
+                `${p.id.owner}/${p.id.repo}`);
             if (content !== newContent) {
                 await file.setContent(newContent);
             }
