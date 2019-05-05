@@ -21,7 +21,7 @@ import { SelectedRepo } from "../common/SelectedRepoFinder";
  */
 export const DefaultSpringSeeds: SelectedRepo[] = [
     {
-        url: "https://github.com/atomist-seeds/spring-rest-seed",
+        url: "https://github.com/atomist-seeds/spring-rest",
         description: "Spring REST Project",
     },
 ];

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { projectUtils } from "@atomist/automation-client";
 import { Options } from "@atomist/automation-client/lib/metadata/automationMetadata";
 import {
     CodeTransform,
@@ -26,6 +27,7 @@ import {
     UpdateReadmeTitle,
 } from "@atomist/sdm-pack-node";
 import { codeLine } from "@atomist/slack-messages";
+import gitUrlParse = require("git-url-parse");
 import { SelectedRepo } from "../../common/SelectedRepoFinder";
 import { SdmEnablementTransform } from "../support/sdmEnablement";
 import {
@@ -56,7 +58,7 @@ export function universalNodeGenerator(
         },
         startingPoint: pi => {
             // Verify that only allowed seed urls are provided
-            if (!!config.seedParameter.type && (config.seedParameter.type as Options).kind === "single" ) {
+            if (!!config.seedParameter.type && (config.seedParameter.type as Options).kind === "single") {
                 const options = (config.seedParameter.type as Options).options;
                 if (!options.some(o => o.value === pi.parameters.seedUrl)) {
                     throw new Error(`Provided seed url ${codeLine(pi.parameters.seedUrl)} is not in the list if available seeds.`);
@@ -67,17 +69,43 @@ export function universalNodeGenerator(
         transform: [
             UpdateReadmeTitle,
             UpdatePackageJsonIdentification,
-            // Run the special transform that is registered on the seed
-            async (p, papi, params) => {
-                const seed = seeds.filter(s => !!s.transform).find(s => s.url === papi.parameters.seedUrl);
-                if (!!seed) {
-                    return seed.transform(p, papi, params);
-                }
-                return p;
-            },
+            replaceSeedSlug,
+            runSeedTransforms(seeds),
             addProvenanceFile,
             SdmEnablementTransform,
         ],
+    };
+}
+
+/**
+ * Replace the slug of the seed repo in the generated project
+ */
+export const replaceSeedSlug: CodeTransform<UniversalNodeGeneratorParams> =
+    async (p, papi) => {
+        const gitUrl = gitUrlParse(papi.parameters.seedUrl);
+        await projectUtils.doWithFiles(p, "**/*", async file => {
+            const content = await file.getContent();
+            const newContent = content.replace(
+                new RegExp(
+                    `${gitUrl.owner}\/${gitUrl.name}`, "g"),
+                `   ${p.id.owner}/${p.id.repo}`);
+            if (content !== newContent) {
+                await file.setContent(newContent);
+            }
+        });
+        return p;
+    };
+
+/**
+ * Run the transform registered on the seed
+ */
+export function runSeedTransforms(seeds: SelectedRepo[]): CodeTransform<UniversalNodeGeneratorParams> {
+    return async (p, papi, params) => {
+        const seed = seeds.filter(s => !!s.transform).find(s => s.url === papi.parameters.seedUrl);
+        if (!!seed) {
+            return seed.transform(p, papi, params);
+        }
+        return p;
     };
 }
 
@@ -88,6 +116,5 @@ export const addProvenanceFile: CodeTransform<UniversalNodeGeneratorParams> =
     async (p, pi) => {
         await p.addFile(
             ".provenance",
-            `This project was created by Atomist from seed project ${pi.parameters.seedUrl}\n\n` +
-            `\tPackage JSON was transformed\n`);
+            `This project was created by Atomist from seed project ${pi.parameters.seedUrl}`);
     };
