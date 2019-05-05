@@ -46,6 +46,7 @@
     "@types/git-url-parse": "^9.0.0",
     "@types/request": "^2.48.1",
     "@types/yamljs": "^0.2.30",
+    "dockerfile-ast": "0.0.14",
     "fs-extra": "^7.0.1",
     "git-url-parse": "^11.1.2",
     "lodash": "^4.17.11",

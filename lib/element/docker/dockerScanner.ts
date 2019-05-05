@@ -29,10 +29,34 @@ import {
     TechnologyClassification,
 } from "@atomist/sdm-pack-analysis/lib/analysis/TechnologyScanner";
 
+import {
+    DockerfileParser,
+    From,
+} from "dockerfile-ast";
+
+export interface ParsedFile {
+
+    /**
+     * Image if we were able to determine it
+     */
+    image?: string;
+
+    /**
+     * Exposed ports
+     */
+    ports?: string[];
+}
+
 export interface DockerFile {
 
     path: string;
     content: string;
+
+    /**
+     * Parsed content on a full analysis
+     */
+    parsed?: ParsedFile;
+
 }
 
 export interface DockerStack extends TechnologyElement {
@@ -43,6 +67,7 @@ export interface DockerStack extends TechnologyElement {
      * Content of the Dockerfile we found
      */
     dockerFile: DockerFile;
+
 }
 
 export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
@@ -52,7 +77,7 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
     }
 
     get scan(): TechnologyScanner<DockerStack> {
-        return async p => {
+        return async (p, ctx, analysisSoFar, options) => {
             const dockerFilePath = await getDockerfile(p);
 
             if (!dockerFilePath) {
@@ -61,10 +86,14 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
 
             let dockerFile: DockerFile;
             try {
+                const content = await p.getFile(dockerFilePath).then(f => f.getContent());
                 dockerFile = {
                     path: dockerFilePath,
-                    content: await p.getFile(dockerFilePath).then(f => f.getContent()),
+                    content,
                 };
+                if (options.full) {
+                    dockerFile.parsed = parseDockerFile(content);
+                }
             } catch {
                 // Never fail
             }
@@ -76,6 +105,29 @@ export class DockerScanner implements PhasedTechnologyScanner<DockerStack> {
             };
         };
     }
+}
+
+function parseDockerFile(content: string): ParsedFile {
+    let image: string;
+    const ports: string[] = [];
+    const dockerfile = DockerfileParser.parse(content);
+    dockerfile.getInstructions().forEach(i => {
+        switch (i.getKeyword()) {
+            case "FROM":
+                const f = i as From;
+                image = f.getImage();
+                break;
+            case "EXPOSE":
+                ports.push(i.getArgumentsContent());
+                break;
+            default:
+                break;
+        }
+    });
+    return {
+        image,
+        ports,
+    };
 }
 
 /**
