@@ -142,8 +142,16 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                             app.path = "/";
                         } else {
                             // This provider has a domain name configured; use a new subdomain and path for the app.
-                            app.host = `${app.workspaceId.toLowerCase()}-${app.ns}.${u.host}`;
+                            app.host = `${app.workspaceId}-${app.ns}.${u.host}`.toLowerCase();
                             app.path = `/${validName(p.name)}`;
+
+                            app.ingressSpec = {
+                                metadata: {
+                                    annotations: {
+                                        "nginx.ingress.kubernetes.io/rewrite-target": "/",
+                                    },
+                                },
+                            };
                         }
                     }
                 }
