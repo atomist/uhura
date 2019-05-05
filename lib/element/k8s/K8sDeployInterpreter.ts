@@ -141,9 +141,9 @@ export function applicationDataCallback(phase: "testing" | "production"): Applic
                             app.host = `${validName(p.name)}.${app.ns}.${u.host}.nip.io`;
                             app.path = "/";
                         } else {
-                            // This provider has a domain name configured; use a new subdomain for the app.
-                            app.host = `${validName(p.name)}-${app.ns}.${u.host}`;
-                            app.path = "/";
+                            // This provider has a domain name configured; use a new subdomain and path for the app.
+                            app.host = `${app.workspaceId.toLowerCase()}-${app.ns}.${u.host}`;
+                            app.path = `/${validName(p.name)}`;
                         }
                     }
                 }
