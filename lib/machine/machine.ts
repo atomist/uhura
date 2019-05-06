@@ -314,9 +314,9 @@ export function machineMaker(opts: Partial<UhuraOptions> = {}): SoftwareDelivery
 
         // Create Node from a list of seeds
         sdm.addGeneratorCommand(universalNodeGenerator({
-            name: "CreateNodeFromList",
-            description: "Create a project from a curated list of Node seed repos",
-            intent: `discover node ${sdm.configuration.name.replace("@", "")}`,
+            name: "CreateFromList",
+            description: "Create a project from a curated list of seed repos",
+            intent: `create project ${sdm.configuration.name.replace("@", "")}`,
             seedParameter: dropDownSeedUrlParameterDefinition(...optsToUse.globalSeeds),
         }, optsToUse.globalSeeds));
 
