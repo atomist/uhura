@@ -20,6 +20,7 @@ import {
     preferencesScanner,
     SnipTransformRecipeContributor,
 } from "@atomist/sdm-pack-analysis";
+import { dotnetCoreStack } from "@atomist/sdm-pack-analysis-dotnet";
 import { nodeStackSupport } from "@atomist/sdm-pack-analysis-node";
 import {
     javaStackSupport,
@@ -28,7 +29,6 @@ import {
 import { singleIssuePerCategoryManaging } from "@atomist/sdm-pack-issue";
 import { CodeInspectionInterpreter } from "../element/common/codeInspectionInterpreter";
 import { dockerStack } from "../element/docker/dockerStack";
-import { dotnetCoreStack } from "../element/dotnet/dotnetCoreStack";
 import { K8sDeployInterpreter } from "../element/k8s/K8sDeployInterpreter";
 import { k8sScanner } from "../element/k8s/k8sScanner";
 import { Mongo } from "../element/mongo/spec";
