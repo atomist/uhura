@@ -11,7 +11,7 @@ This page details all runtime OSS dependencies of `@atomist/uhura`.
 | License | Count |
 |---------|-------|
 |[AFLv2.1](#aflv21)|1|
-|[Apache-2.0](#apache-20)|34|
+|[Apache-2.0](#apache-20)|35|
 |[BSD-2-Clause](#bsd-2-clause)|11|
 |[BSD-3-Clause](#bsd-3-clause)|25|
 |[BSD](#bsd)|9|
@@ -45,6 +45,7 @@ Apache License 2.0 - [http://www.apache.org/licenses/LICENSE-2.0](http://www.apa
 |------|---------|-----------|------------|
 |`@atomist/automation-client-ext-dashboard`|`1.1.0-master.20190411083753`|Atomist|[https://github.com/atomist/automation-client-ext-dashboard](https://github.com/atomist/automation-client-ext-dashboard)|
 |`@atomist/sdm-core`|`1.5.0-master.20190428172312`|Atomist|[https://github.com/atomist/sdm-core](https://github.com/atomist/sdm-core)|
+|`@atomist/sdm-pack-analysis-dotnet`|`0.1.0-master.20190506042825`|Atomist|[https://github.com/atomist/sdm-pack-analysis-dotnet](https://github.com/atomist/sdm-pack-analysis-dotnet)|
 |`@atomist/sdm-pack-analysis-node`|`2.0.0-master.20190428091829`|Atomist|[https://github.com/atomist/sdm-pack-analysis-node](https://github.com/atomist/sdm-pack-analysis-node)|
 |`@atomist/sdm-pack-analysis-spring`|`2.0.0-master.20190428091941`|Atomist|[https://github.com/atomist/sdm-pack-analysis-spring](https://github.com/atomist/sdm-pack-analysis-spring)|
 |`@atomist/sdm-pack-analysis`|`1.1.0-master.20190429060345`|Atomist|[https://github.com/atomist/sdm-pack-analysis](https://github.com/atomist/sdm-pack-analysis)|
