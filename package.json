@@ -31,7 +31,7 @@
     "@atomist/microgrammar": "^1.2.0",
     "@atomist/sdm": "1.5.0-master.20190427145645",
     "@atomist/sdm-core": "1.5.0-master.20190428172312",
-    "@atomist/sdm-pack-analysis": "1.1.0-master.20190429060345",
+    "@atomist/sdm-pack-analysis": "1.1.0-master.20190511094352",
     "@atomist/sdm-pack-analysis-dotnet": "0.1.0-master.20190506042825",
     "@atomist/sdm-pack-analysis-node": "2.0.0-master.20190428091829",
     "@atomist/sdm-pack-analysis-spring": "2.0.0-master.20190428091941",
