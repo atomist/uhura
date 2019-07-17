@@ -18,7 +18,6 @@ import { configureDashboardNotifications } from "@atomist/automation-client-ext-
 import {
     AutoCodeInspection,
     CachingProjectLoader,
-    Fingerprint,
     GitHubLazyProjectLoader,
     SoftwareDeliveryMachineConfiguration,
 } from "@atomist/sdm";
@@ -44,7 +43,6 @@ export const configuration: SoftwareDeliveryMachineConfiguration = {
         projectLoader: new GitHubLazyProjectLoader(new CachingProjectLoader()),
         goal: {
             optional: [
-                new Fingerprint(),
                 new AutoCodeInspection(),
             ],
         },
