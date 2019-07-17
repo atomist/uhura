@@ -72,7 +72,7 @@ export class EmulateTravisBuildInterpreter implements Interpreter {
                     services: {},
                     dependencies: [],
                     referencedEnvironmentVariables: [],
-                    fingerprints: {},
+                    fingerprints: [],
                     messages: [],
                 };
                 // Scan the project for Travis. Push rules should ensure
