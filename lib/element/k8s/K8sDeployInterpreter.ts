@@ -34,9 +34,9 @@ import {
 } from "@atomist/sdm-pack-analysis";
 import {
     KubernetesApplication,
+    KubernetesApplicationDataCallback,
     KubernetesDeploy,
 } from "@atomist/sdm-pack-k8s";
-import { ApplicationDataCallback } from "@atomist/sdm-pack-k8s/lib/deploy/goal";
 import { validName } from "@atomist/sdm-pack-k8s/lib/kubernetes/name";
 import * as slack from "@atomist/slack-messages";
 import * as k8s from "@kubernetes/client-node";
@@ -103,7 +103,7 @@ To enable custom deployment, follow the ${slack.url("https://docs.atomist.com/ge
     }
 }
 
-export function applicationDataCallback(phase: "testing" | "production"): ApplicationDataCallback {
+export function applicationDataCallback(phase: "testing" | "production"): KubernetesApplicationDataCallback {
     return async (app: KubernetesApplication,
                   p: GitProject,
                   g: KubernetesDeploy,
