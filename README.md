@@ -1,4 +1,4 @@
-# @atomist/uhura 
+# @atomist/uhura  
  
 Atomist Uhura, an SDM providing self service software delivery.
 
