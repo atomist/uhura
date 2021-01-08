@@ -48,7 +48,7 @@ Follow [@atomist][atomist-twitter] and [the Atomist blog][atomist-blog].
 
 ## Support
 
-General support questions should be discussed in the `#support`
+General support questions should be discussed in the `#help`
 channel in the [Atomist community Slack workspace][slack].
 
 If you find a problem, please create an [issue][].
